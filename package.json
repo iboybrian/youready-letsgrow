@@ -1,0 +1,10 @@
+{
+  "name": "youreadyletsgrow",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "WD Brown speaker/founder site — youreadyletsgrow.com",
+  "dependencies": {
+    "resend": "^4.0.0"
+  }
+}
