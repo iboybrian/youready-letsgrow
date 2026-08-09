@@ -1,6 +1,9 @@
 // youreadyletsgrow.com — anchor nav state + booking form submit.
 
-document.getElementById('year').textContent = new Date().getFullYear();
+// Optional chaining, not a bare call: if the footer year span ever goes missing,
+// a TypeError here would kill every feature below it.
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 /* ---- nav active state ------------------------------------------------ */
 // IntersectionObserver over the sections the nav points at. No scroll library.
@@ -142,6 +145,88 @@ if (counters.length) {
   }, { threshold: 0.4 });
 
   counters.forEach(el => counterObserver.observe(el));
+}
+
+/* ---- testimonials carousel ------------------------------------------- */
+// Coverflow: centre card, one either side, the rest off-stage. Positions are
+// classes; CSS owns the transforms.
+
+const testimonials = document.querySelector('[data-testimonials]');
+if (testimonials) {
+  const cards = [...testimonials.querySelectorAll('[data-t-slide]')];
+  const dotsBox = testimonials.querySelector('[data-t-dots]');
+  const INTERVAL = 2000;
+  let index = 0;
+  let timer = null;
+  let locked = false; // a video is loaded — never rotate it out from under someone
+
+  const dots = cards.map((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 't-dot';
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', `Testimonial ${i + 1} of ${cards.length}`);
+    dot.addEventListener('click', () => { show(i); restart(); });
+    dotsBox.appendChild(dot);
+    return dot;
+  });
+
+  function show(next) {
+    const count = cards.length;
+    index = (next + count) % count;
+    const prev = (index - 1 + count) % count;
+    const after = (index + 1) % count;
+
+    cards.forEach((card, i) => {
+      card.classList.toggle('is-center', i === index);
+      card.classList.toggle('is-prev', i === prev);
+      card.classList.toggle('is-next', i === after);
+      // Off-stage cards must not be tab stops.
+      const offstage = i !== index && i !== prev && i !== after;
+      card.querySelectorAll('button, iframe, a').forEach(el => {
+        el.tabIndex = offstage ? -1 : 0;
+      });
+    });
+    dots.forEach((d, i) => d.setAttribute('aria-selected', String(i === index)));
+  }
+
+  const stop = () => clearInterval(timer);
+  const start = () => {
+    stop();
+    if (locked) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timer = setInterval(() => show(index + 1), INTERVAL);
+  };
+  const restart = () => { stop(); start(); };
+
+  testimonials.addEventListener('mouseenter', stop);
+  testimonials.addEventListener('mouseleave', start);
+  testimonials.addEventListener('focusin', stop);
+  testimonials.addEventListener('focusout', start);
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+
+  // Facade -> real player. Nothing is requested from YouTube until this runs, so
+  // the page sets no third-party cookies on load. nocookie domain either way.
+  testimonials.addEventListener('click', event => {
+    const facade = event.target.closest('.t-facade');
+    if (!facade || facade.disabled) return;
+
+    const id = facade.dataset.videoId;
+    if (!id) return;
+
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
+    iframe.title = facade.closest('.t-card').querySelector('.t-name')?.textContent || 'Testimonial';
+    iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    facade.replaceWith(iframe);
+
+    locked = true;   // stop auto-rotation for good once someone is watching
+    stop();
+  });
+
+  show(0);
+  start();
 }
 
 /* ---- signup modal ---------------------------------------------------- */

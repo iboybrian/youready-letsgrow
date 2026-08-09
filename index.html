@@ -130,6 +130,9 @@
     <circle cx="12" cy="17.4" r="1.55" fill="currentColor" stroke="none"/>
     <circle cx="6.6" cy="12" r="1.55" fill="currentColor" stroke="none"/>
   </symbol>
+  <symbol id="ico-play" viewBox="0 0 24 24">
+    <polygon points="9,7.5 9,16.5 17,12" fill="currentColor" stroke="none"/>
+  </symbol>
   <symbol id="ico-screen" viewBox="0 0 24 24">
     <rect x="2.5" y="3.8" width="19" height="13.2" rx="2"/>
     <path d="M12 17v3.7M9 20.7h6"/>
@@ -445,6 +448,82 @@
       <li><span>Real estate</span> experience</li>
       <li><span data-count="300000" data-suffix="+">300,000+</span> digital message views</li>
     </ul>
+  </div>
+</section>
+
+<!-- ============ 4b. TESTIMONIALS ============
+     Coverflow carousel: centre card plus one either side, 4th off-stage.
+     Facade pattern — no YouTube iframe exists until someone clicks, so nothing is
+     requested from Google (and no third-party cookies are set) on page load. Real
+     embeds use youtube-nocookie.com. Add a video by putting its ID in
+     data-video-id; the card's button enables itself. -->
+<section class="section section-dark" id="testimonials">
+  <div class="wrap">
+    <p class="eyebrow">In Their Words</p>
+    <h2 class="section-title reveal">Lives He's Impacted</h2>
+    <p class="section-lede reveal">
+      &ldquo;WD does not simply help people reach the next level. He helps them become whole
+      enough to sustain it.&rdquo;
+    </p>
+
+    <!-- FOR WD'S REVIEW — delete this notice once the real videos are in.
+         Nothing below is a real testimonial. -->
+    <p class="t-disclaimer">
+      <strong>Placeholder &mdash; for WD's review.</strong> These four slots are empty on purpose:
+      no testimonial videos have been selected yet, and nothing here is a real quote or a real
+      person. Send the YouTube links (and how you'd like each person named) and they drop
+      straight in. Happy to change the number of slots, the order, or scrap the section.
+    </p>
+
+    <div class="testimonials" data-testimonials>
+      <div class="t-stage">
+        <article class="t-card" data-t-slide>
+          <button class="t-facade" type="button" data-video-id="" disabled>
+            <span class="t-thumb"><span>Video coming soon</span></span>
+            <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
+          </button>
+          <div class="t-meta">
+            <p class="t-quote">Quote pending</p>
+            <p class="t-name">Name pending</p>
+          </div>
+        </article>
+
+        <article class="t-card" data-t-slide>
+          <button class="t-facade" type="button" data-video-id="" disabled>
+            <span class="t-thumb"><span>Video coming soon</span></span>
+            <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
+          </button>
+          <div class="t-meta">
+            <p class="t-quote">Quote pending</p>
+            <p class="t-name">Name pending</p>
+          </div>
+        </article>
+
+        <article class="t-card" data-t-slide>
+          <button class="t-facade" type="button" data-video-id="" disabled>
+            <span class="t-thumb"><span>Video coming soon</span></span>
+            <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
+          </button>
+          <div class="t-meta">
+            <p class="t-quote">Quote pending</p>
+            <p class="t-name">Name pending</p>
+          </div>
+        </article>
+
+        <article class="t-card" data-t-slide>
+          <button class="t-facade" type="button" data-video-id="" disabled>
+            <span class="t-thumb"><span>Video coming soon</span></span>
+            <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
+          </button>
+          <div class="t-meta">
+            <p class="t-quote">Quote pending</p>
+            <p class="t-name">Name pending</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="t-dots" role="tablist" aria-label="Choose testimonial" data-t-dots></div>
+    </div>
   </div>
 </section>
 

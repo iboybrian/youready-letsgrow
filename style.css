@@ -1041,3 +1041,152 @@ button[disabled] { opacity: .6; cursor: progress; }
   /* Logo is decoration; on a phone the form should be what fits on screen. */
   .signup-brand { display: none; }
 }
+
+/* ---------------- testimonials carousel ---------------- */
+
+.t-disclaimer {
+  max-width: 70ch;
+  margin: 1.5rem 0 0;
+  padding: .9rem 1.1rem;
+  font-size: .9rem;
+  line-height: 1.55;
+  color: var(--on-dark);
+  border: 1px dashed rgba(240, 198, 103, .5);
+  border-radius: var(--radius);
+  background: rgba(240, 198, 103, .06);
+}
+.t-disclaimer strong { color: var(--gold-soft); }
+
+.testimonials {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  /* Side cards deliberately overhang the container; clip them so the peek never
+     becomes a horizontal scrollbar on the page. */
+  overflow: hidden;
+}
+
+/* Cards are absolutely stacked and moved by transform, so the stage needs an
+   explicit height — nothing in flow is left to give it one. */
+.t-stage {
+  position: relative;
+  height: clamp(280px, 34vw, 430px);
+}
+.t-card {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(52%, 560px);
+  transition: transform .6s cubic-bezier(.22, 1, .36, 1), opacity .6s ease;
+  transform: translateX(-50%) scale(.72);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.t-card.is-center {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 3;
+}
+.t-card.is-prev,
+.t-card.is-next {
+  opacity: .4;
+  z-index: 2;
+  pointer-events: auto;
+}
+.t-card.is-prev { transform: translateX(-118%) scale(.78); }
+.t-card.is-next { transform: translateX(18%) scale(.78); }
+
+.t-facade {
+  display: block;
+  position: relative;
+  width: 100%;
+  padding: 0;
+  border: 1px solid rgba(240, 198, 103, .25);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+}
+.t-facade[disabled] { cursor: default; }
+
+.t-thumb {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  background: repeating-linear-gradient(45deg, #0E2340, #0E2340 14px, #122a4c 14px, #122a4c 28px);
+  color: var(--on-dark);
+  font-size: .8rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.t-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.t-play svg {
+  width: 62px;
+  height: 62px;
+  color: var(--gold-soft);
+  background: rgba(7, 20, 37, .72);
+  border: 1px solid rgba(240, 198, 103, .5);
+  border-radius: 50%;
+  padding: 6px;
+}
+.t-facade:hover:not([disabled]) .t-play svg { background: rgba(7, 20, 37, .9); }
+/* No video yet: hide the play affordance entirely rather than dimming it on top
+   of the "coming soon" label, which just made the two collide. */
+.t-facade[disabled] .t-play { display: none; }
+
+/* The clicked-in player replaces the facade entirely. */
+.t-card iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius);
+}
+
+.t-meta { padding-top: .85rem; }
+.t-quote {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  color: var(--white);
+  margin: 0 0 .2rem;
+}
+.t-name {
+  font-size: .8rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  margin: 0;
+}
+
+.t-dots {
+  display: flex;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: 1.5rem;
+}
+.t-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(240, 198, 103, .55);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .2s ease;
+}
+.t-dot[aria-selected="true"] {
+  background: var(--gold-soft);
+  transform: scale(1.25);
+}
+
+@media (max-width: 760px) {
+  /* Side cards leave too little room for the centre one to be watchable. */
+  .t-card { width: 88%; }
+  .t-card.is-prev,
+  .t-card.is-next { opacity: 0; pointer-events: none; }
+  .t-stage { height: clamp(300px, 74vw, 380px); }
+}
