@@ -563,7 +563,8 @@ body.nav-open { overflow: hidden; }
   .hero-inner {
     grid-template-columns: 1fr;
     align-items: start;
-    row-gap: 1.25rem;
+    row-gap: .85rem;
+    padding-top: clamp(1.5rem, 5vw, 2.5rem);
   }
   /* The wrapper disappears from layout so its children (eyebrow, headline, lede,
      ctas) become direct grid items alongside the photo — only then can `order`
@@ -571,7 +572,7 @@ body.nav-open { overflow: hidden; }
   /* .hero-copy is display:contents here, so its padding-bottom no longer applies —
      the hero's bottom breathing room has to come from the grid itself, or the last
      CTA sits flush on the section border. */
-  .hero-inner { padding-bottom: clamp(2.75rem, 9vw, 4rem); }
+  .hero-inner { padding-bottom: clamp(2rem, 6vw, 3rem); }
   .hero-copy { display: contents; }
   .hero-inner .eyebrow   { order: 1; }
   .hero-photo             { order: 2; }
@@ -579,11 +580,14 @@ body.nav-open { overflow: hidden; }
   .lede-track               { order: 4; }
   .hero-ctas                { order: 5; }
   .hero-photo { display: block; }
-  /* Shorter box on phones, same fit-inside rule so the tall shot still can't
-     stretch the hero. */
-  .hero-carousel { height: clamp(280px, 42vh, 380px); }
-  .hero-photo img { max-width: 300px; }
-  .hero-dots { padding: .85rem 0 0; }
+  /* Smaller box on phones — this is the single biggest block in the stack, so it's
+     the main lever for getting the CTAs closer to the fold. Deliberately no
+     max-width on the image here: the seated photo (wider aspect than the other
+     two) was hitting a 300px width cap before it reached the box's own height,
+     which left a gap above it that the other two slides didn't have. Height alone
+     is now the only constraint, so every slide fills the box the same way. */
+  .hero-carousel { height: clamp(170px, 26vh, 240px); }
+  .hero-dots { padding: .6rem 0 0; }
   /* "Let's Grow!" starts its own line instead of "Let's" hanging off
      the end of "You Ready?". */
   .hero-title .line-break { display: inline; }
