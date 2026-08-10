@@ -143,8 +143,15 @@
 
 <header class="nav" id="nav">
   <div class="wrap nav-inner">
+    <!-- Burger + close exist only below 720px; CSS hides them on desktop. -->
+    <button class="nav-burger" type="button" id="nav-burger"
+            aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+
     <a class="nav-brand" href="#top">WD&nbsp;Brown</a>
-    <nav aria-label="Primary">
+
+    <nav id="primary-nav" aria-label="Primary">
       <ul class="nav-links">
         <li><a href="#speaking">Speaking</a></li>
         <li><a href="#meet-wd">Meet WD</a></li>
@@ -152,9 +159,18 @@
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
+
     <a class="btn btn-gold btn-sm nav-cta" href="#contact">Book WD</a>
   </div>
 </header>
+
+<!-- Mobile menu. A <dialog> renders in the top layer, so it cannot be trapped by
+     the header's backdrop-filter (which makes .nav a containing block for
+     fixed-position descendants). Links are cloned from the header nav by main.js,
+     so the markup above stays the single source of truth. -->
+<dialog class="nav-dialog" id="nav-dialog" aria-label="Menu">
+  <button class="nav-close" type="button" id="nav-close" aria-label="Close menu">&times;</button>
+</dialog>
 
 <main id="main">
 

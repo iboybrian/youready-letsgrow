@@ -5,6 +5,46 @@
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+/* ---- mobile menu ----------------------------------------------------- */
+// Full-screen <dialog> below 720px. showModal() puts it in the top layer, so the
+// header's backdrop-filter cannot trap it, and focus trap + Escape come free.
+// Links are cloned from the header nav so the markup has one source of truth.
+
+const burger = document.getElementById('nav-burger');
+const navDialog = document.getElementById('nav-dialog');
+if (burger && navDialog && typeof navDialog.showModal === 'function') {
+  const sourceLinks = document.querySelector('#primary-nav .nav-links');
+  if (sourceLinks) navDialog.appendChild(sourceLinks.cloneNode(true));
+
+  const closeBtn = document.getElementById('nav-close');
+
+  const openNav = () => {
+    navDialog.showModal();
+    document.body.classList.add('nav-open');
+    burger.setAttribute('aria-expanded', 'true');
+  };
+  const closeNav = () => navDialog.close();
+
+  burger.addEventListener('click', openNav);
+  closeBtn?.addEventListener('click', closeNav);
+
+  // Escape and the close button both fire 'close'; clean up in one place.
+  navDialog.addEventListener('close', () => {
+    document.body.classList.remove('nav-open');
+    burger.setAttribute('aria-expanded', 'false');
+  });
+
+  // Tapping a link should navigate to the anchor, not just close.
+  navDialog.addEventListener('click', event => {
+    if (event.target.closest('a')) closeNav();
+  });
+
+  // Resizing to desktop must not leave a full-screen menu covering the page.
+  window.matchMedia('(min-width: 721px)').addEventListener('change', event => {
+    if (event.matches && navDialog.open) closeNav();
+  });
+}
+
 /* ---- nav active state ------------------------------------------------ */
 // IntersectionObserver over the sections the nav points at. No scroll library.
 

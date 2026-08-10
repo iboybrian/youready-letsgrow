@@ -145,35 +145,97 @@ textarea:focus-visible {
 }
 .nav-cta { flex-shrink: 0; }
 
-/* Below this width, brand + links + CTA no longer fit one row. Rather than let
-   flex shrink link text into a mid-word wrap (the old bug), the nav links drop
-   to their own full-width row and scroll horizontally if they still overflow. */
+/* Burger and close button are mobile-only. */
+.nav-burger,
+.nav-close { display: none; }
+
+/* Below this width the header carries only the burger and the Book WD button;
+   the links move into a full-screen <dialog>. Without JS there is no burger and
+   no dialog, so the inline nav simply stays visible and wraps. */
 @media (max-width: 720px) {
-  .nav-inner {
-    height: auto;
-    flex-wrap: wrap;
-    row-gap: .6rem;
-    padding-block: .65rem;
+  .js #primary-nav { display: none; }
+
+  .js .nav-burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;              /* comfortable touch target */
+    height: 44px;
+    padding: 0 10px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
   }
-  .nav-inner nav[aria-label="Primary"] {
-    order: 3;
-    flex-basis: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .nav-burger span {
+    display: block;
+    height: 2px;
+    background: var(--gold-soft);
+    border-radius: 2px;
   }
-  .nav-links {
-    width: max-content;
-    min-width: 100%;
-    gap: 1.25rem;
-  }
+
+  .nav-brand { display: none; }        /* header keeps only burger + CTA */
+  .nav-cta { margin-left: auto; }
+
+  .nav-links { gap: 1rem; }
   .nav-links a { font-size: .85rem; }
-  .nav-brand { font-size: 1.05rem; }
-  [id] { scroll-margin-top: 6.5rem; } /* nav is now taller (two rows) */
 }
-@media (max-width: 420px) {
-  .nav-brand { display: none; }
-  .nav-inner { justify-content: flex-end; } /* brand's auto-margin push is gone */
+
+/* ---- mobile menu dialog ---- */
+/* Top layer: immune to the header's backdrop-filter containing block. */
+.nav-dialog {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--ink-deep);
+  color: var(--on-dark);
+  overflow: hidden;
 }
+.nav-dialog::backdrop { background: var(--ink-deep); }
+
+.nav-dialog .nav-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.25rem;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+.nav-dialog .nav-links a {
+  font-family: var(--serif);
+  font-size: 1.9rem;
+  letter-spacing: 0;
+  color: var(--on-dark);
+  text-decoration: none;
+  border-bottom: 0;
+}
+.nav-dialog .nav-links a.is-active { color: var(--gold-soft); }
+
+.nav-dialog .nav-close {
+  display: block;
+  position: absolute;
+  top: .75rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  font-size: 2.25rem;
+  line-height: 1;
+  color: var(--gold-soft);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Dialog is open: stop the page behind it from scrolling. */
+body.nav-open { overflow: hidden; }
 
 /* Anchor targets clear the sticky nav. */
 [id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
@@ -506,6 +568,10 @@ textarea:focus-visible {
   /* The wrapper disappears from layout so its children (eyebrow, headline, lede,
      ctas) become direct grid items alongside the photo — only then can `order`
      interleave them: eyebrow, then photo, then headline/lede/ctas. */
+  /* .hero-copy is display:contents here, so its padding-bottom no longer applies —
+     the hero's bottom breathing room has to come from the grid itself, or the last
+     CTA sits flush on the section border. */
+  .hero-inner { padding-bottom: clamp(2.75rem, 9vw, 4rem); }
   .hero-copy { display: contents; }
   .hero-inner .eyebrow   { order: 1; }
   .hero-photo             { order: 2; }
