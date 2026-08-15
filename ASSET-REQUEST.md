@@ -25,7 +25,7 @@ before launch." The site is built and running; these items unblock launch, not t
 |---|---|---|
 | 7 | **Millionaire Playbook cover art** | No cover found anywhere on the live sites. Placeholder tile in place. Is this book actually published yet? |
 | ~~8~~ | ~~Amazon link — Millionaire Playbook~~ | Resolved — `amazon.com/dp/B0GQZ6DYCH` wired in. |
-| 9 | **Amazon link — Mindset Before Millions Workbook** | None found. Button disabled. |
+| ~~9~~ | ~~Amazon link — Mindset Before Millions Workbook~~ | Resolved — `amazon.com/dp/B0GRWR1QQ5` wired in. |
 | 10 | **Confirm the Mindset Before Millions edition** | We found `B0GQZ2R814`, which is the e-book listing. If there's a paperback, WD may prefer that as the default link. |
 | ~~11~~ | ~~Official logo files~~ | Resolved — received the tree + "You Ready? Let's Grow!™" lockup PNG (the site's own mark, separate from the Vision Buildaz "VB" logo). Cropped the tree canopy in as the favicon since the full lockup isn't legible at 16px. Not yet used as the nav wordmark (currently text) or on the hero — confirm placement. |
 | 12 | **Brand hex codes** | The received logo's navy/orange reads more saturated-orange than the muted gold we sampled from the tiiny.site demo (`#C0922F`). If there's an official brand guide with exact hex values, send it — one CSS block swaps the whole palette. |
