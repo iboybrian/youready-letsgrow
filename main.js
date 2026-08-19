@@ -127,6 +127,42 @@ if (carousel) {
   start();
 }
 
+/* ---- floating reel launcher ------------------------------------------ */
+// Pinned bottom-right from the first paint, hero included.
+// Dismissal only lasts the visit; the reel section is still linked from the nav,
+// so closing it never makes anything unreachable.
+
+const reelFloat = document.getElementById('reel-float');
+if (reelFloat) {
+  const floatLink = reelFloat.querySelector('.reel-float-link');
+
+  // The reel section's facade is the single source of truth for the video id, so
+  // dropping data-video-id there lights up the bubble too. Until then both show
+  // the same "coming soon" message.
+  const source = document.getElementById('reel-facade');
+
+  floatLink.addEventListener('click', event => {
+    event.preventDefault();   // play here, don't jump to the section
+    const id = source?.dataset.videoId;
+
+    if (!id) {
+      alert("Official WD Brown Speaker Reel video coming soon! Swap video URL ready.");
+      return;
+    }
+
+    const frame = document.createElement('iframe');
+    frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
+    frame.title = 'WD Brown speaker reel';
+    frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+    frame.allowFullscreen = true;
+    floatLink.replaceWith(frame);
+    reelFloat.classList.add('is-playing');
+  });
+
+  document.getElementById('reel-float-close')
+    ?.addEventListener('click', () => reelFloat.classList.add('is-dismissed'));
+}
+
 /* ---- scroll reveals -------------------------------------------------- */
 // CSS holds the hidden state; this only flips .is-visible once, on the way in.
 
@@ -143,9 +179,14 @@ if (revealTargets.length) {
       entry.target.classList.add('is-visible');
       self.unobserve(entry.target); // reveal once, never re-hide on scroll up
     }
-  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.05 });
+  }, { rootMargin: '300px 0px 300px 0px', threshold: 0 });
 
   revealTargets.forEach(el => revealer.observe(el));
+
+  // Guarantee all elements are revealed on page load
+  window.addEventListener('load', () => {
+    revealTargets.forEach(el => el.classList.add('is-visible'));
+  });
 }
 
 /* ---- counting stats -------------------------------------------------- */
@@ -195,7 +236,7 @@ const testimonials = document.querySelector('[data-testimonials]');
 if (testimonials) {
   const cards = [...testimonials.querySelectorAll('[data-t-slide]')];
   const dotsBox = testimonials.querySelector('[data-t-dots]');
-  const INTERVAL = 2000;
+  const INTERVAL = 6000;   // 2s was faster than the quote can be read
   let index = 0;
   let timer = null;
   let locked = false; // a video is loaded — never rotate it out from under someone
@@ -252,6 +293,13 @@ if (testimonials) {
     if (!facade || facade.disabled) return;
 
     const id = facade.dataset.videoId;
+    const placeholder = facade.dataset.videoPlaceholder;
+
+    if (placeholder) {
+      alert("Testimonial Video coming soon! Stay tuned for full video clip.");
+      return;
+    }
+
     if (!id) return;
 
     const iframe = document.createElement('iframe');
@@ -266,6 +314,104 @@ if (testimonials) {
   });
 
   show(0);
+  start();
+}
+
+/* ---- speaker reel handler -------------------------------------------- */
+const reelFacade = document.getElementById('reel-facade');
+if (reelFacade) {
+  reelFacade.addEventListener('click', () => {
+    alert("Official WD Brown Speaker Reel video coming soon! Swap video URL ready.");
+  });
+}
+
+/* ---- books horizontal infinite carousel ------------------------------- */
+const booksContainer = document.querySelector('[data-books-carousel]');
+if (booksContainer) {
+  const track = booksContainer.querySelector('[data-books-track]');
+  const cards = [...track.querySelectorAll('.book-card-h')];
+  const dotsBox = booksContainer.querySelector('[data-books-dots]');
+  const prevBtn = booksContainer.querySelector('[data-books-prev]');
+  const nextBtn = booksContainer.querySelector('[data-books-next]');
+  const TOTAL_ORIGINAL = 4;
+  let index = 0;
+  let timer = null;
+  const INTERVAL = 4000;
+
+  const dots = Array.from({ length: TOTAL_ORIGINAL }, (_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'books-dot';
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', `Book slide ${i + 1} of ${TOTAL_ORIGINAL}`);
+    dot.addEventListener('click', () => { goTo(i); restart(); });
+    if (dotsBox) dotsBox.appendChild(dot);
+    return dot;
+  });
+
+  function getStepWidth() {
+    const card = cards[0];
+    if (!card) return 0;
+    const gap = 24;
+    return card.offsetWidth + gap;
+  }
+
+  function update() {
+    const stepWidth = getStepWidth();
+    track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+    track.style.transform = `translateX(-${index * stepWidth}px)`;
+
+    const dotIndex = index % TOTAL_ORIGINAL;
+    dots.forEach((d, i) => d.setAttribute('aria-selected', String(i === dotIndex)));
+  }
+
+  function goTo(nextIndex) {
+    index = (nextIndex + TOTAL_ORIGINAL) % TOTAL_ORIGINAL;
+    update();
+  }
+
+  function next() {
+    index++;
+    if (index >= TOTAL_ORIGINAL) {
+      track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+      track.style.transform = `translateX(-${index * getStepWidth()}px)`;
+      dots.forEach((d, i) => d.setAttribute('aria-selected', String(i === 0)));
+
+      setTimeout(() => {
+        index = 0;
+        track.style.transition = 'none';
+        track.style.transform = `translateX(0px)`;
+      }, 600);
+    } else {
+      update();
+    }
+  }
+
+  function prev() {
+    if (index <= 0) {
+      index = TOTAL_ORIGINAL - 1;
+    } else {
+      index--;
+    }
+    update();
+  }
+
+  const stop = () => clearInterval(timer);
+  const start = () => {
+    stop();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timer = setInterval(next, INTERVAL);
+  };
+  const restart = () => { stop(); start(); };
+
+  prevBtn?.addEventListener('click', () => { prev(); restart(); });
+  nextBtn?.addEventListener('click', () => { next(); restart(); });
+
+  booksContainer.addEventListener('mouseenter', stop);
+  booksContainer.addEventListener('mouseleave', start);
+  window.addEventListener('resize', update);
+
+  update();
   start();
 }
 
@@ -325,7 +471,8 @@ if (signup && typeof signup.showModal === 'function') {
         throw new Error(body.error || 'Request failed (' + response.status + ')');
       }
       signupForm.reset();
-      signupStatus.textContent = "You're in — watch for a text and email. See you Tuesday at 7PM EST.";
+      // Keep this in sync with the session times printed in the modal copy.
+      signupStatus.textContent = "You're in — watch for a text and email. See you Tuesday & Thursday at 7:00 PM EST.";
       signupStatus.className = 'signup-status is-ok';
       markSeen();
     } catch (error) {
@@ -334,6 +481,29 @@ if (signup && typeof signup.showModal === 'function') {
     } finally {
       button.disabled = false;
     }
+  });
+}
+
+/* ---- copy-to-clipboard ------------------------------------------------ */
+// For the standard speaker bio an organiser pastes into their programme.
+// navigator.clipboard is undefined on file:// and any non-secure origin, so the
+// button is only wired up when it exists — otherwise the text stays selectable.
+
+if (navigator.clipboard) {
+  document.querySelectorAll('[data-copy]').forEach(button => {
+    const source = document.querySelector(button.dataset.copy);
+    if (!source) return;
+
+    button.addEventListener('click', async () => {
+      const label = button.textContent;
+      try {
+        await navigator.clipboard.writeText(source.innerText.trim());
+        button.textContent = 'Copied';
+      } catch {
+        button.textContent = 'Press Ctrl+C to copy';
+      }
+      setTimeout(() => { button.textContent = label; }, 2000);
+    });
   });
 }
 

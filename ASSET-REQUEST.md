@@ -29,10 +29,13 @@ before launch." The site is built and running; these items unblock launch, not t
 | 10 | **Confirm the Mindset Before Millions edition** | We found `B0GQZ2R814`, which is the e-book listing. If there's a paperback, WD may prefer that as the default link. |
 | ~~11~~ | ~~Official logo files~~ | Resolved — received the tree + "You Ready? Let's Grow!™" lockup PNG (the site's own mark, separate from the Vision Buildaz "VB" logo). Cropped the tree canopy in as the favicon since the full lockup isn't legible at 16px. Not yet used as the nav wordmark (currently text) or on the hero — confirm placement. |
 | 12 | **Brand hex codes** | The received logo's navy/orange reads more saturated-orange than the muted gold we sampled from the tiiny.site demo (`#C0922F`). If there's an official brand guide with exact hex values, send it — one CSS block swaps the whole palette. |
-| 25 | **Logo file format** | We only have a flat PNG on a white background. An SVG or transparent-background PNG at higher resolution would let the mark sit cleanly on the dark nav/hero without a white box around it. |
+| ~~25~~ | ~~Logo file format~~ | Partly resolved — the **Vision Buildaz** mark arrived with real transparency (`assets/logo-vb.webp`, used in the bio and the footer). The **You Ready? Let's Grow!** lockup is still only a flat PNG on white: we keyed the background out ourselves (`assets/logo-yrlg.webp`), which works, but an SVG or a transparent-background export at higher resolution would be cleaner at large sizes. |
 | 13 | **More photos of WD** | We only have one studio cutout and one portrait. This is a site selling speaking engagements — event/stage photos, WD with an audience, candid shots from past talks all strengthen "Meet WD" and the speaking section. Even phone photos help. |
 | 14 | **Higher-res photography** | The SOP asks us to confirm nothing better exists. What we pulled: a 2400×3000 cutout (good) and a 1024×1024 portrait (adequate, not great). |
-| 23 | **Video** | None on the site currently. A short speaker reel (even 60–90 seconds of past-talk clips) is the single highest-impact addition for a booking page — it's what committees actually watch before they book. Testimonial clips from past clients/organizers would help too. Any raw footage works; we can cut it. |
+| ~~23~~ | ~~Video~~ | Partly resolved — four testimonial clips are live in the Video Testimonials carousel. Still outstanding: items 26 and 27 below. |
+| 26 | **Speaker reel** | The reel section is built and the player only needs a video ID dropped in. Until then it shows a poster with a "coming soon" message. This is still the single highest-impact addition for a booking page. **Also send the real runtime** — the badge previously showed "02:45", which was invented; it has been removed rather than left as a claim we can't stand behind. |
+| 27 | **Nellie Brown's testimonial video** | Her card is live with her quote and title, but the play button is a placeholder. Any clip, phone footage included. |
+| ~~31~~ | ~~Stage photo (WD speaking to a full room)~~ | Resolved — received and now the hero background (`assets/wd-speaking.webp`, 2200px WebP; full-res original in `assets/originals/wd_speaking.jpg`). The hero cutout carousel was retired in its favour. |
 
 ---
 
@@ -48,6 +51,9 @@ before launch." The site is built and running; these items unblock launch, not t
 | 20 | **Testimonials / social proof.** The Vision Buildaz audit scored conversion 4/10 and called out missing social proof. There is currently none on this page either. Any event organizer quotes, client testimonials, or past venues we can name? |
 | 21 | **"300,000+ views" claim.** Which platform/post? Worth being able to point to if a booking committee asks. |
 | 22 | **GitHub/Vercel access for Phase 2** (SOP open question #1). Not needed for this build, but who is coordinating it and by when? |
+| 28 | **Live-session times.** The signup popup states "every Tuesday & Thursday at 7:00 PM EST". Nothing on our side verifies that — confirm the days and time, or send the correct ones. |
+| 29 | **Tagline punctuation.** The 8.15 review writes it as "You Ready, Let's Grow!" with a comma. Every approved document and the whole site use "You Ready? Let's Grow!®". We have added the missing `!` where it was absent; the comma-vs-question-mark version needs WD's call before we change 20+ instances. |
+| 30 | **Speaking fees.** The page now routes to "Request Pricing & Availability" with no figures shown, per Brian's instruction. If WD wants a starting-at range or named packages on the page, send the numbers — we will not estimate them. |
 
 ---
 

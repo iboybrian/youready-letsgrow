@@ -21,7 +21,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 
 <!-- Scroll reveals only exist when JS does. Without this class every element stays
@@ -121,8 +121,6 @@
     <rect x="16.3" y="9" width="5.2" height="7.2" rx="1.2"/>
     <path d="M2.5 19.5h19"/>
   </symbol>
-  <!-- Dots orbit inside the ring, not on it — sitting on the stroke reads as a
-       notched gear rather than people gathered around a circle. -->
   <symbol id="ico-circle-people" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="8.6"/>
     <circle cx="12" cy="6.6" r="1.55" fill="currentColor" stroke="none"/>
@@ -139,6 +137,9 @@
     <circle cx="12" cy="9.2" r="1.9"/>
     <path d="M8.7 14a3.4 3.4 0 0 1 6.6 0"/>
   </symbol>
+  <symbol id="ico-download" viewBox="0 0 24 24">
+    <path d="M12 3v13M7 11l5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
 </svg>
 
 <header class="nav" id="nav">
@@ -149,25 +150,36 @@
       <span></span><span></span><span></span>
     </button>
 
-    <a class="nav-brand" href="#top">WD&nbsp;Brown</a>
+    <a class="nav-brand" href="#top">
+      <img class="nav-logo" src="assets/logo-yrlg.webp" width="637" height="410"
+           alt="You Ready? Let's Grow!">
+      <span class="nav-brand-text">
+        <span class="nav-brand-title">WD&nbsp;Brown</span>
+        <span class="nav-brand-tag">Vision Buildaz</span>
+      </span>
+    </a>
 
     <nav id="primary-nav" aria-label="Primary">
       <ul class="nav-links">
         <li><a href="#speaking">Speaking</a></li>
+        <li><a href="#speaker-reel">Speaker Reel</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
         <li><a href="#meet-wd">Meet WD</a></li>
         <li><a href="#books">Books</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
 
-    <a class="btn btn-gold btn-sm nav-cta" href="#contact">Book WD</a>
+    <div class="nav-actions">
+      <a class="btn btn-ghost btn-sm nav-pdf" href="assets/WD_Brown_Speaker_Sheet.pdf" download title="Download Speaker Sheet PDF">
+        <svg class="icon-inline" aria-hidden="true"><use href="#ico-download"></use></svg> Speaker Sheet
+      </a>
+      <a class="btn btn-gold btn-sm nav-cta" href="#contact">Book WD</a>
+    </div>
   </div>
 </header>
 
-<!-- Mobile menu. A <dialog> renders in the top layer, so it cannot be trapped by
-     the header's backdrop-filter (which makes .nav a containing block for
-     fixed-position descendants). Links are cloned from the header nav by main.js,
-     so the markup above stays the single source of truth. -->
+<!-- Mobile menu. A <dialog> renders in the top layer. -->
 <dialog class="nav-dialog" id="nav-dialog" aria-label="Menu">
   <button class="nav-close" type="button" id="nav-close" aria-label="Close menu">&times;</button>
 </dialog>
@@ -175,43 +187,32 @@
 <main id="main">
 
 <!-- ============ 1. HERO ============ -->
-<!-- DELIBERATE DIVERGENCE from the content doc, at the client's direction:
-     the doc makes "Helping People Reach Their Destination Whole." the headline and
-     "You Ready? Let's Grow!" a small tagline badge. WD asked for the tagline as the
-     main headline instead, so the doc's headline became slide 1 of the lede carousel
-     and the badge was dropped. Title/meta still lead with the descriptive phrasing. -->
 <section class="hero" id="top">
+  <!-- Stage shot as the hero ground. Real <img> rather than a CSS background so
+       it can be the LCP element and get fetchpriority. WD stands on the left of
+       the frame, which is why the copy column sits right. -->
+  <img class="hero-bg" src="assets/wd-speaking.webp" width="2200" height="1228"
+       fetchpriority="high" alt="WD Brown speaking on stage to a full arena.">
+
   <div class="wrap hero-inner">
     <div class="hero-copy">
-      <!-- Separators are <i>, not <span>: nth-of-type counts by tag name, so
-           mixing them into the span sequence would offset the .word delays. -->
-      <p class="eyebrow eyebrow-split">
-        <span class="word"><span>Entrepreneur</span></span>
-        <i class="sep" aria-hidden="true">&middot;</i>
-        <span class="word"><span>Author</span></span>
-        <i class="sep" aria-hidden="true">&middot;</i>
-        <span class="word"><span>Mentor</span></span>
-        <i class="sep" aria-hidden="true">&middot;</i>
-        <span class="word"><span>Speaker</span></span>
-      </p>
-
-      <!-- Words are split in the markup, not at runtime: the headline is fixed copy,
-           so per-word delays come from :nth-of-type in CSS. No splitter library. -->
       <h1 class="hero-title">
         <span class="word"><span>You</span></span>
         <span class="word"><span>Ready?</span></span><br class="line-break">
         <span class="word"><span>Let's</span></span>
-        <span class="word"><span>Grow!</span></span>
+        <span class="word"><span>Grow!&reg;</span></span>
       </h1>
 
-      <!-- Text track. Stacked in one grid cell like the photos so the tallest
-           line reserves the height and the CTAs below never shift mid-fade. -->
-      <div class="lede-track hero-fade" data-track>
+      <!-- The rotating lede is now the only carousel track in the hero, so it
+           carries data-carousel: main.js drives every [data-track] off this one
+           counter, and the dots below derive from it. -->
+      <div class="lede-track hero-fade" data-carousel data-track
+           aria-roledescription="carousel" aria-label="What WD brings">
         <p class="lede is-active" data-slide>
           Helping people reach their destination <em>whole</em>.
         </p>
         <p class="lede" data-slide>
-          "Success should not cost you your health, relationships, identity, faith, or purpose." - WD Brown
+          &ldquo;Success should not cost you your health, relationships, identity, faith, or purpose.&rdquo; &mdash; WD Brown
         </p>
         <p class="lede" data-slide>
           WD Brown helps audiences build the mindset, clarity, and inner foundation
@@ -219,95 +220,151 @@
         </p>
       </div>
 
+      <div class="hero-dots" role="tablist" aria-label="Choose line" data-dots></div>
+
       <div class="hero-ctas hero-fade">
-        <a class="btn btn-gold" href="#contact">Book WD to Speak</a>
-        <a class="btn btn-ghost" href="#speaker-sheet">Download the Speaker Sheet</a>
-      </div>
-    </div>
-    <!-- Crossfade carousel. Slide 1 is in the DOM as the visible default, so the
-         hero still shows a photo with no JS and no CSS animation support. -->
-    <div class="hero-photo">
-      <div class="hero-carousel" data-carousel data-track aria-roledescription="carousel" aria-label="Photos of WD Brown">
-        <div class="hero-slide is-active" data-slide>
-          <img src="assets/wd-hero.webp" width="893" height="974" fetchpriority="high"
-               alt="WD Brown, smiling, wearing glasses and a tan suit jacket.">
-        </div>
-        <div class="hero-slide" data-slide>
-          <img src="assets/wd-hero-seated.webp" width="957" height="871" loading="lazy"
-               alt="WD Brown seated in a leather office chair, wearing a navy suit.">
-        </div>
-        <div class="hero-slide" data-slide>
-          <img src="assets/wd-hero-standing.webp" width="459" height="938" loading="lazy"
-               alt="WD Brown standing in a grey suit, one hand in his pocket.">
-        </div>
+        <a class="btn btn-gold btn-lg" href="#contact">Book WD to Speak</a>
+        <a class="btn btn-ghost btn-lg" href="#speaker-reel">Watch Speaker Reel</a>
+        <a class="btn btn-ghost-subtle" href="assets/WD_Brown_Speaker_Sheet.pdf" download>
+          <svg class="icon-inline" aria-hidden="true"><use href="#ico-download"></use></svg> Download Speaker Sheet (PDF)
+        </a>
       </div>
 
-      <div class="hero-dots" role="tablist" aria-label="Choose photo" data-dots></div>
+      <!-- Plain text on purpose: the per-word stagger was dropped so it arrives
+           with the rest of the hero. -->
+      <p class="eyebrow hero-credit hero-fade">
+        Entrepreneur &middot; Author &middot; Mentor &middot; Speaker
+      </p>
     </div>
   </div>
 </section>
 
-<!-- ============ 2. CORE PROMISE ============ -->
+<!-- The four value propositions, condensed to a running line at the client's
+     8.15 direction, and pulled up directly under the hero. Full bleed, so it is
+     its own band rather than a child of a section. The second list is a verbatim
+     copy: the track scrolls exactly 50% and restarts, which is what makes the
+     loop seamless. Keep the two lists identical. -->
+<div class="marquee" aria-label="What audiences take away">
+  <div class="marquee-track">
+    <ul class="marquee-list">
+      <li>Achieve more without sacrificing health</li>
+      <li>Cut through distractions and build with clarity and focus</li>
+      <li>Wisdom grounded in experience &mdash; 7-figure businesses, 30+ years of mentoring</li>
+      <li>Leave with a clearer mindset and stronger direction</li>
+      <li class="marquee-brand">You Ready? Let's Grow!</li>
+    </ul>
+    <ul class="marquee-list" aria-hidden="true">
+      <li>Achieve more without sacrificing health</li>
+      <li>Cut through distractions and build with clarity and focus</li>
+      <li>Wisdom grounded in experience &mdash; 7-figure businesses, 30+ years of mentoring</li>
+      <li>Leave with a clearer mindset and stronger direction</li>
+      <li class="marquee-brand">You Ready? Let's Grow!</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 2. CORE PROMISE / WHY HIRE WD ============ -->
 <section class="section" id="promise">
   <div class="wrap">
-    <p class="eyebrow eyebrow-dark reveal">The Core Promise</p>
-    <h2 class="section-title reveal">His message goes beyond motivation.</h2>
-    <p class="section-lede reveal">
-      WD helps audiences examine who they are becoming while they pursue what they want,
-      so they can build success they are prepared to sustain.
-    </p>
+    <div class="promise-header reveal">
+      <img class="promise-logo" src="assets/logo-yrlg.webp" width="637" height="410"
+           alt="You Ready? Let's Grow!">
+      <p class="eyebrow promise-eyebrow">The Core Speaker Promise</p>
+      <h2 class="section-title promise-title">His message goes beyond motivation.</h2>
+      <p class="section-lede">
+        WD helps entrepreneurs, leaders, and audiences examine who they are becoming while they pursue what they want &mdash; building success they are prepared to sustain.
+      </p>
+    </div>
 
-    <ul class="promise-grid reveal-group">
-      <li>
-        <h3>Success Without Self-Destruction</h3>
-        <p>Achieve more without sacrificing health, relationships, identity, faith, peace, or purpose.</p>
-      </li>
-      <li>
-        <h3>Clarity and Focus</h3>
-        <p>Cut through distractions, evaluate what deserves your attention, and build with intention.</p>
-      </li>
-      <li>
-        <h3>Wisdom Grounded in Experience</h3>
-        <p>Informed by building businesses, creating wealth, navigating setbacks, and mentoring others.</p>
-      </li>
-      <li>
-        <h3>Transformation Beyond Motivation</h3>
-        <p>Audiences leave with a clearer mindset, stronger direction, and practical questions they can use.</p>
-      </li>
-    </ul>
+    <!-- WHY WD. Dark panel inside a light section, so it sits between the promise
+         header and the booking banner without needing its own section. The four
+         primary value propositions are verbatim from the approved speaker sheet;
+         the card fills alternate on purpose, per the layout the client referenced. -->
+    <div class="why-panel reveal" id="why-wd">
+      <p class="eyebrow">Why WD</p>
+      <h2 class="section-title why-title">Why is WD the person you're looking for?</h2>
+      <p class="section-lede">
+        As an entrepreneur, author, mentor and speaker, WD gives your audience more than a
+        keynote, workshop, or retreat session. They walk out with:
+      </p>
+
+      <ul class="why-grid reveal-group">
+        <li class="why-card why-card-paper">
+          <h3>Success without self-destruction</h3>
+          <p>WD helps people achieve more without sacrificing their health, relationships, identity, faith, peace, or purpose.</p>
+        </li>
+        <li class="why-card why-card-outline">
+          <h3>Clarity and focus</h3>
+          <p>He helps audiences cut through distractions, evaluate what deserves their attention, and build with intention.</p>
+        </li>
+        <li class="why-card why-card-gold">
+          <h3>Wisdom grounded in experience</h3>
+          <p>His message is informed by building businesses, creating wealth, navigating setbacks, mentoring others, and learning what success requires beyond strategy.</p>
+        </li>
+        <li class="why-card why-card-paper">
+          <h3>Transformation beyond motivation</h3>
+          <p>Audiences leave with a clearer mindset, stronger direction, and practical questions they can use to make better decisions.</p>
+        </li>
+      </ul>
+
+      <!-- Credibility snapshot — approved doc, section 2. -->
+      <ul class="creds reveal-group">
+        <li><span data-count="30" data-suffix="+">30+</span> years of mentorship</li>
+        <li><span data-count="2" data-suffix="&times;">2&times;</span> seven-figure company experience</li>
+        <li><span>Multiple</span> businesses built</li>
+        <li><span>Real estate</span> experience</li>
+        <li><span>Author</span> of <em>Mindset Before Millions</em></li>
+        <li><span data-count="300000" data-suffix="+">300,000+</span> digital message views</li>
+      </ul>
+    </div>
+
+    <!-- Mid-Page Call to Action Banner -->
+    <div class="cta-banner reveal">
+      <div class="cta-banner-text">
+        <h3>Ready to bring clarity and momentum to your next event?</h3>
+        <p>Check WD Brown's speaking calendar and inquire for date availability.</p>
+      </div>
+      <div class="cta-banner-actions">
+        <a class="btn btn-gold btn-lg" href="#contact">Book WD to Speak</a>
+        <a class="btn btn-ghost btn-lg" href="assets/WD_Brown_Speaker_Sheet.pdf" download>
+          <svg class="icon-inline" aria-hidden="true"><use href="#ico-download"></use></svg> Speaker Sheet (PDF)
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- ============ 3. SPEAKING / THE WD METHOD ============ -->
-<section class="section section-dark" id="speaking">
+<section class="section" id="speaking">
   <div class="wrap">
-    <p class="eyebrow">Speaking</p>
+    <p class="eyebrow">Speaking &amp; Keynotes</p>
     <h2 class="section-title reveal">The WD Method</h2>
     <p class="section-lede reveal">
-      The most gifted people in the world still needed a coach to reach the top. WD brings that same shift to
-      entrepreneurs, leaders, and audiences ready to build with intention instead of pressure.
+      The most gifted leaders and performers in the world still needed a coach to reach the top. WD brings that same clarity and grounding shift to your event.
     </p>
 
-    <!-- Content doc calls this the "short version" — three labels, no body copy.
-         Signature topics below carry the detail. -->
     <ol class="method-strip method-strip-short reveal-group">
       <li>
         <span class="method-num">01</span>
         <h3>Shift Your Mindset</h3>
+        <p class="method-sub">Build the internal foundation first.</p>
       </li>
       <li>
         <span class="method-num">02</span>
         <h3>Clarify Your Purpose</h3>
+        <p class="method-sub">Filter noise and align on true priorities.</p>
       </li>
       <li>
         <span class="method-num">03</span>
         <h3>Build Your Next Step</h3>
+        <p class="method-sub">Execute with intention and sustain growth.</p>
       </li>
     </ol>
 
     <h3 class="sub-title">Signature Speaking Topics</h3>
     <div class="topics reveal-group">
       <article class="topic">
+        <div class="topic-num">Topic 1</div>
         <h4>Mindset Before Millions</h4>
         <p class="topic-line">Build the person who can sustain the success.</p>
         <ul>
@@ -317,6 +374,7 @@
         </ul>
       </article>
       <article class="topic">
+        <div class="topic-num">Topic 2</div>
         <h4>Get There Whole</h4>
         <p class="topic-line">Reach your destination without losing yourself along the way.</p>
         <ul>
@@ -326,6 +384,7 @@
         </ul>
       </article>
       <article class="topic">
+        <div class="topic-num">Topic 3</div>
         <h4>The Focus Filter</h4>
         <p class="topic-line">Cut through distractions and build with intention.</p>
         <ul>
@@ -335,6 +394,7 @@
         </ul>
       </article>
       <article class="topic">
+        <div class="topic-num">Topic 4</div>
         <h4>Built for the Next Chapter</h4>
         <p class="topic-line">Use experience, humility, and adaptability to keep growing.</p>
         <ul>
@@ -343,16 +403,17 @@
           <li>Replace fear of starting again with the confidence to build from experience.</li>
         </ul>
       </article>
-      <article class="topic">
+      <article class="topic topic-highlight">
+        <div class="topic-num">Topic 5</div>
         <h4>Harvest Time</h4>
         <p class="topic-line">Now you're ready &mdash; go out and reap what you have sown.</p>
+        <p class="topic-desc">An empowering closing address that calls audiences into decisive, aligned action.</p>
       </article>
     </div>
 
     <div class="two-col reveal-group">
       <div>
         <h3 class="sub-title">Ideal Audiences</h3>
-        <!-- Icons are decorative: every row's meaning is already in its label. -->
         <ul class="tick">
           <li><svg aria-hidden="true"><use href="#ico-briefcase"></use></svg>Entrepreneurs and business owners</li>
           <li><svg aria-hidden="true"><use href="#ico-building"></use></svg>Corporate and nonprofit leaders</li>
@@ -377,116 +438,99 @@
       </div>
     </div>
 
-    <p class="section-cta reveal"><a class="btn btn-gold" href="#contact">Book WD to Speak</a></p>
+    <!-- Bulk book packages. Moved out of the books section: it is an event-planning
+         ask, so it belongs with the formats an organiser is already reading. -->
+    <div class="books-bulk-cta reveal">
+      <p><strong>Planning an event, retreat, or executive session?</strong> Ask about bulk companion book &amp; workbook packages for your attendees.</p>
+      <a class="btn btn-gold" href="#contact">Inquire About Event Packages &rarr;</a>
+    </div>
   </div>
 </section>
 
-<!-- ============ 4. MEET WD ============ -->
-<section class="section" id="meet-wd">
+<!-- ============ 3b. STATEMENT ============ -->
+<!-- WD's own words, from the approved bio. Full-bleed and alone on purpose: it is the
+     one line that says what the whole talk is about. -->
+<section class="statement">
   <div class="wrap">
-    <div class="bio-layout reveal-group">
-      <!-- Heading lives inside the photo column so the whole block sticks together
-           while the bio copy scrolls past it. -->
-      <div class="bio-aside">
-        <p class="eyebrow eyebrow-dark">Author &middot; Mentor &middot; Speaker &middot; Coach</p>
-        <h2 class="section-title">Meet WD Brown.</h2>
-        <figure class="bio-photo">
-          <img src="assets/wd-portrait.webp" width="900" height="900" loading="lazy"
-               alt="Portrait of WD Brown in a navy suit." >
-        </figure>
-      </div>
+    <blockquote class="statement-quote reveal">
+      <p>
+        We're going to get you to the millions, but first, let's get your mind right.
+        Let's make sure your heart is right. Let's make sure you're mentally and emotionally
+        whole &mdash; because if that's not in place, the millions won't matter.
+      </p>
+      <cite>WD Brown</cite>
+    </blockquote>
+  </div>
+</section>
 
-      <div class="bio-copy">
-        <p class="bio-open">
-          Raised in inner-city New York, WD's path was anything but linear. He dropped out of high school,
-          earned his GED on the third try, and had to rebuild &mdash; mentally, emotionally, spiritually &mdash;
-          long before the results ever showed.
-        </p>
-        <p>
-          That journey shaped a message he shares with anyone ready to hear it, whether you're just starting out
-          or already &ldquo;successful&rdquo;:
-        </p>
+<!-- ============ 4. DEDICATED SPEAKER REEL SHOWCASE ============ -->
+<section class="section section-dark speaker-reel-section" id="speaker-reel">
+  <div class="wrap">
+    <div class="reel-header reveal">
+      <p class="eyebrow">High-Impact Stage Highlights</p>
+      <h2 class="section-title">WD Brown Speaker Reel</h2>
+      <p class="section-lede">
+        Experience the energy, conviction, and deep connection WD brings to every stage and keynote address.
+      </p>
+    </div>
 
-        <p class="thesis">before the millions, you have to become whole.</p>
-
-        <p>
-          Through what he calls the <strong>Focus Filter</strong>, WD teaches a practical way to cut through
-          distractions, align your life, and build with intention instead of pressure. For three decades, he has
-          walked beside people finding direction, rebuilding after setbacks, and chasing a version of success that
-          finally feels aligned.
-        </p>
-
-        <p>
-          WD is also the founder of <strong>Vision Buildaz</strong>, the coaching and mentoring platform behind
-          &ldquo;You Ready? Let's Grow!&rdquo;&reg; &mdash; where his approach comes to life through 1:1 and
-          group coaching.
-        </p>
-
-        <!-- TODO: unverified attribution. Confirm with the client that this is a real,
-             sourced quote from an actual audience member before launch. -->
-        <blockquote class="pull-quote">
-          <p>He knows how to find the heart of a person and answer in a way that makes you see.</p>
-          <cite>Audience member</cite>
-        </blockquote>
-
-        <p>
-          His wisdom isn't handed down from a stage. It's shared person to person, wherever someone's ready for it.
-        </p>
-
-        <blockquote class="pull-quote">
-          <p>I'm not an expert. I'm a practitioner. I'm growing with you.</p>
-          <cite>WD Brown</cite>
-        </blockquote>
-
-        <p>
-          WD describes vulnerability as one of his greatest strengths. He is willing to share the failures, lessons,
-          and hard-earned wisdom behind his success so others can avoid unnecessary potholes and move forward with
-          greater clarity. Through live conversations, books, mentorship, and speaking, WD challenges people to stop
-          chasing everything and start focusing on what actually matters.
-        </p>
-        <p>
-          He does not present himself as someone who has finished growing.
-        </p>
-
-        <p>
-          WD Brown does not simply teach people how to make money or reach another level. He helps them become whole
-          enough to sustain where they are going.
-        </p>
+    <div class="reel-container reveal">
+      <div class="reel-facade" id="reel-facade" data-video-placeholder="speaker-reel">
+        <img src="assets/wd-hero.webp" class="reel-poster" alt="WD Brown Speaking Live">
+        <div class="reel-glass-backdrop"></div>
+        <div class="reel-content">
+          <button class="reel-play-btn" type="button" aria-label="Play WD Brown Speaker Reel">
+            <svg aria-hidden="true"><use href="#ico-play"></use></svg>
+          </button>
+          <div class="reel-text">
+            <!-- TODO: runtime removed — no reel exists yet, so no duration can be stated.
+                 Restore "&bull; MM:SS" here once the real reel is delivered. -->
+            <span class="reel-badge">Keynote Highlights</span>
+            <h3 class="reel-title">&ldquo;You Ready? Let's Grow!&rdquo; Live Stage Experience</h3>
+            <p class="reel-sub">Watch WD Brown transform rooms and speak directly to the heart of leaders.</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Numeric stats carry their final value as text, so they read correctly with
-         no JS; the count-up only overwrites it once scrolled into view. -->
-    <ul class="creds reveal-group">
-      <li><span data-count="30" data-suffix="+">30+</span> years of mentorship</li>
-      <li><span data-count="2" data-suffix="&times;">2&times;</span> seven-figure company experience</li>
-      <li><span>Multiple</span> businesses built</li>
-      <li><span>Real estate</span> experience</li>
-      <li><span data-count="300000" data-suffix="+">300,000+</span> digital message views</li>
-    </ul>
+    <div class="reel-bottom-cta reveal">
+      <p>Want WD Brown to deliver a high-energy keynote or workshop for your organization?</p>
+      <a class="btn btn-gold" href="#contact">Request Pricing &amp; Availability &rarr;</a>
+    </div>
   </div>
 </section>
 
-<!-- ============ 4b. TESTIMONIALS ============
-     Coverflow carousel: centre card plus one either side, 4th off-stage.
-     Facade pattern — no YouTube iframe exists until someone clicks, so nothing is
-     requested from Google (and no third-party cookies are set) on page load. Real
-     embeds use youtube-nocookie.com. Add a video by putting its ID in
-     data-video-id; the card's button enables itself. -->
+<!-- ============ 5. VIDEO TESTIMONIALS ============ -->
 <section class="section section-dark" id="testimonials">
   <div class="wrap">
-    <p class="eyebrow">In Their Words</p>
-    <h2 class="section-title reveal">Lives He's Impacted</h2>
-    <p class="section-lede reveal">
-      &ldquo;WD does not simply help people reach the next level. He helps them become whole
-      enough to sustain it.&rdquo;
-    </p>
+    <div class="testimonials-header reveal">
+      <p class="eyebrow">Video Testimonials</p>
+      <h2 class="section-title">Watch What Leaders &amp; Organizers Say</h2>
+      <p class="section-lede">
+        &ldquo;WD does not simply help people reach the next level. He helps them become whole enough to sustain it.&rdquo;
+      </p>
+    </div>
 
     <div class="testimonials" data-testimonials>
       <div class="t-stage">
+        <!-- Nellie Brown Testimonial Card (WD's Wife & Executive Leader) -->
+        <article class="t-card t-card-special" data-t-slide>
+          <!-- No photo of Nellie yet, and WD's portrait here read as if it were her.
+               Labelled placeholder until her footage arrives — ASSET-REQUEST.md #27. -->
+          <button class="t-facade" type="button" data-video-placeholder="nellie">
+            <span class="t-thumb t-thumb-pending">Nellie's testimonial &mdash; pending</span>
+            <span class="t-badge-custom">Co-Founder &amp; Executive Director</span>
+          </button>
+          <div class="t-meta">
+            <p class="t-quote">&ldquo;Success without wholeness isn't true success. WD lives what he teaches every single day.&rdquo;</p>
+            <p class="t-name">Nellie Brown</p>
+            <p class="t-role">First Lady of Vision Buildaz</p>
+          </div>
+        </article>
+
         <article class="t-card" data-t-slide>
           <button class="t-facade" type="button" data-video-id="y46I3ZRGgJw">
-            <span class="t-thumb"><img src="https://i.ytimg.com/vi/y46I3ZRGgJw/hqdefault.jpg" alt="" loading="lazy"></span>
+            <span class="t-thumb"><img src="https://i.ytimg.com/vi/y46I3ZRGgJw/hqdefault.jpg" alt="Dr Omar Bali" loading="lazy"></span>
             <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
           </button>
           <div class="t-meta">
@@ -497,7 +541,7 @@
 
         <article class="t-card" data-t-slide>
           <button class="t-facade" type="button" data-video-id="Kxf390Ihz3o">
-            <span class="t-thumb"><img src="https://i.ytimg.com/vi/Kxf390Ihz3o/hqdefault.jpg" alt="" loading="lazy"></span>
+            <span class="t-thumb"><img src="https://i.ytimg.com/vi/Kxf390Ihz3o/hqdefault.jpg" alt="Yuen Yufeng" loading="lazy"></span>
             <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
           </button>
           <div class="t-meta">
@@ -508,7 +552,7 @@
 
         <article class="t-card" data-t-slide>
           <button class="t-facade" type="button" data-video-id="gAnbYMzjNJ8">
-            <span class="t-thumb"><img src="https://i.ytimg.com/vi/gAnbYMzjNJ8/hqdefault.jpg" alt="" loading="lazy"></span>
+            <span class="t-thumb"><img src="https://i.ytimg.com/vi/gAnbYMzjNJ8/hqdefault.jpg" alt="Edmon Khachatryan" loading="lazy"></span>
             <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
           </button>
           <div class="t-meta">
@@ -519,7 +563,7 @@
 
         <article class="t-card" data-t-slide>
           <button class="t-facade" type="button" data-video-id="HHGzZHnCWFo">
-            <span class="t-thumb"><img src="https://i.ytimg.com/vi/HHGzZHnCWFo/hqdefault.jpg" alt="" loading="lazy"></span>
+            <span class="t-thumb"><img src="https://i.ytimg.com/vi/HHGzZHnCWFo/hqdefault.jpg" alt="Nicholas Damien" loading="lazy"></span>
             <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
           </button>
           <div class="t-meta">
@@ -531,104 +575,245 @@
 
       <div class="t-dots" role="tablist" aria-label="Choose testimonial" data-t-dots></div>
     </div>
+
   </div>
 </section>
 
-<!-- ============ 5. BOOKS ============ -->
+<!-- ============ 6. MEET WD ============ -->
+<section class="section" id="meet-wd">
+  <div class="wrap">
+    <div class="bio-layout reveal-group">
+      <div class="bio-aside">
+        <p class="eyebrow eyebrow-dark">Author &middot; Mentor &middot; Speaker &middot; Coach</p>
+        <h2 class="section-title">Meet WD Brown.</h2>
+        <figure class="bio-photo">
+          <img src="assets/wd-portrait.webp" width="900" height="900" loading="lazy"
+               alt="Portrait of WD Brown in a navy suit." >
+        </figure>
+
+        <!-- Both marks side by side under the portrait: the speaking brand and the
+             parent company. Sized off height so the two lockups optically match. -->
+        <div class="bio-marks">
+          <img src="assets/logo-yrlg.webp" width="637" height="410" loading="lazy"
+               alt="You Ready? Let's Grow!">
+          <img class="bio-mark-vb" src="assets/logo-vb.webp" width="520" height="325" loading="lazy"
+               alt="Vision Buildaz">
+        </div>
+      </div>
+
+      <div class="bio-copy">
+        <p class="bio-open">
+          Raised in inner-city New York, WD's path was anything but linear. He dropped out of high school,
+          earned his GED on the third try, and had to rebuild &mdash; mentally, emotionally, spiritually &mdash;
+          long before the results ever showed.
+        </p>
+        <!-- Trimmed ~55% at the client's request: what stays is the origin story,
+             the thesis, the method, what an organiser is actually buying (how he
+             connects), one proof quote and the close. Every sentence here is still
+             verbatim from the approved bio — sentences were removed, never reworded.
+             The cut paragraphs (Vision Buildaz, the music industry, vulnerability)
+             all live in the speaker sheet PDF. -->
+
+        <p class="thesis">Before the Millions, you have to become whole.</p>
+
+        <p>
+          Through what he calls the <strong>Focus Filter</strong>, WD teaches a practical way to cut through
+          distractions, align your life, and build with intention instead of pressure.
+        </p>
+
+        <p>
+          What sets WD apart is not only what he teaches, but how he connects. He listens intently,
+          discerns what is being said beneath the surface, and responds in a way that brings clarity
+          in real time.
+        </p>
+
+        <blockquote class="pull-quote">
+          <p>He knows how to find the heart of a person and answer in a way that makes you see.</p>
+          <cite>Audience member</cite>
+        </blockquote>
+
+        <blockquote class="pull-quote">
+          <!-- No literal quote marks: .pull-quote p adds them in CSS. -->
+          <p>I'm not an expert. I'm a practitioner. I'm growing with you.</p>
+          <cite>WD Brown</cite>
+        </blockquote>
+
+        <p>
+          WD Brown does not simply teach people how to make money or reach another level. He helps them become whole
+          enough to sustain where they are going.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 7. BOOKS & WORKBOOKS ============ -->
 <section class="section section-tint" id="books">
   <div class="wrap">
-    <p class="eyebrow eyebrow-dark">Books</p>
-    <h2 class="section-title reveal">Start With the Books</h2>
+    <p class="eyebrow eyebrow-dark">YOU READY? LET'S GROW! SERIES</p>
+    <h2 class="section-title reveal">Start with the books.</h2>
 
-    <div class="books reveal-group">
-      <article class="book">
-        <img src="assets/book-mindset.webp" width="600" height="960" loading="lazy"
-             alt="Cover of Mindset Before Millions by WD Brown.">
-        <h3>Mindset Before Millions</h3>
-        <p>
-          Wealth without alignment comes at a cost few talk about. <em>Mindset Before Millions</em> challenges the
-          belief that financial success requires sacrificing health, relationships, and fulfillment &mdash; reframing
-          wealth not as endless accumulation, but as purpose: a tool meant to support a life of balance, meaning,
-          and lasting impact.
-        </p>
-        <a class="btn btn-gold btn-sm" href="https://www.amazon.com/dp/B0GQZ2R814" target="_blank" rel="noopener">Order on Amazon</a>
-      </article>
+    <div class="books-carousel reveal" data-books-carousel>
+      <div class="books-stage">
+        <div class="books-track" data-books-track>
+          <!-- Book 1 -->
+          <article class="book-card-h">
+            <div class="book-card-cover">
+              <img src="assets/book-mindset.webp" width="600" height="960" loading="lazy" alt="Mindset Before Millions">
+            </div>
+            <div class="book-card-info">
+              <h3>Mindset Before Millions</h3>
+              <p>True prosperity starts within. A reframe of wealth as purpose &mdash; balance, legacy, and lasting impact.</p>
+              <a class="book-amazon-link" href="https://www.amazon.com/dp/B0GQZ2R814" target="_blank" rel="noopener">
+                Order on Amazon &rarr;
+              </a>
+            </div>
+          </article>
 
-      <article class="book">
-        <img src="assets/book-workbook.webp" width="600" height="960" loading="lazy"
-             alt="Cover of the Mindset Before Millions Workbook by WD Brown.">
-        <h3>Mindset Before Millions &mdash; Workbook</h3>
-        <p>
-          Transformation doesn't happen just by reading &mdash; it happens through reflection. The companion
-          workbook helps you apply the book's principles to your own life through guided prompts and journaling
-          space, examining how your pursuit of success is impacting your health, relationships, boundaries, and
-          sense of fulfillment.
-        </p>
-        <a class="btn btn-gold btn-sm" href="https://www.amazon.com/dp/B0GRWR1QQ5" target="_blank" rel="noopener">Order on Amazon</a>
-      </article>
+          <!-- Book 2 -->
+          <article class="book-card-h">
+            <div class="book-card-cover">
+              <img src="assets/millionaire-playbook.jpg" width="600" height="960" loading="lazy" alt="Millionaire Playbook">
+            </div>
+            <div class="book-card-info">
+              <h3>Millionaire Playbook</h3>
+              <p>The next step in the series &mdash; practical moves to build and sustain what you create.</p>
+              <a class="book-amazon-link" href="https://www.amazon.com/dp/B0GQZ6DYCH" target="_blank" rel="noopener">
+                Order on Amazon &rarr;
+              </a>
+            </div>
+          </article>
 
-      <article class="book">
-        <img src="assets/millionaire-playbook.jpg" width="600" height="960" loading="lazy"
-             alt="Cover of Millionaire Playbook by WD Brown.">
-        <h3>Millionaire Playbook</h3>
-        <p>
-          The next step in the <em>You Ready? Let's Grow!</em> series &mdash; practical moves to build and sustain
-          what you create.
-        </p>
-        <a class="btn btn-gold btn-sm" href="https://www.amazon.com/dp/B0GQZ6DYCH" target="_blank" rel="noopener">Order on Amazon</a>
-      </article>
+          <!-- Book 3 -->
+          <article class="book-card-h">
+            <div class="book-card-cover">
+              <img src="assets/book-workbook.webp" width="600" height="960" loading="lazy" alt="Mindset Before Millions Workbook">
+            </div>
+            <div class="book-card-info">
+              <h3>Mindset Before Millions &mdash; Workbook</h3>
+              <p>Transformation happens through reflection. Guided prompts and journaling space for your growth journey.</p>
+              <a class="book-amazon-link" href="https://www.amazon.com/dp/B0GRWR1QQ5" target="_blank" rel="noopener">
+                Order on Amazon &rarr;
+              </a>
+            </div>
+          </article>
 
-      <article class="book">
-        <img src="assets/millionaire-workbook.webp" width="1000" height="1294" loading="lazy"
-             style="aspect-ratio: 1000 / 1294;" alt="Cover of the Millionaire Workbook by WD Brown.">
-        <h3>Millionaire Workbook</h3>
-        <p>
-          Guided exercises for financial freedom and wealth building &mdash; a hands-on companion for turning the
-          <em>You Ready? Let's Grow!</em> principles into a plan for your own finances.
-        </p>
-        <a class="btn btn-gold btn-sm" href="https://www.amazon.com/dp/B0GRVCF6XV" target="_blank" rel="noopener">Order on Amazon</a>
-      </article>
+          <!-- Book 4 -->
+          <article class="book-card-h">
+            <div class="book-card-cover">
+              <img src="assets/millionaire-workbook.webp" width="1000" height="1294" loading="lazy" alt="Millionaire Workbook">
+            </div>
+            <div class="book-card-info">
+              <h3>Millionaire Workbook</h3>
+              <p>Guided exercises for financial freedom and wealth building &mdash; turn principles into your actionable plan.</p>
+              <a class="book-amazon-link" href="https://www.amazon.com/dp/B0GRVCF6XV" target="_blank" rel="noopener">
+                Order on Amazon &rarr;
+              </a>
+            </div>
+          </article>
 
+          <!-- Duplicated for seamless infinite loop -->
+          <article class="book-card-h" aria-hidden="true">
+            <div class="book-card-cover">
+              <img src="assets/book-mindset.webp" width="600" height="960" loading="lazy" alt="">
+            </div>
+            <div class="book-card-info">
+              <h3>Mindset Before Millions</h3>
+              <p>True prosperity starts within. A reframe of wealth as purpose &mdash; balance, legacy, and lasting impact.</p>
+              <a class="book-amazon-link" href="https://www.amazon.com/dp/B0GQZ2R814" target="_blank" rel="noopener">
+                Order on Amazon &rarr;
+              </a>
+            </div>
+          </article>
 
+          <article class="book-card-h" aria-hidden="true">
+            <div class="book-card-cover">
+              <img src="assets/millionaire-playbook.jpg" width="600" height="960" loading="lazy" alt="">
+            </div>
+            <div class="book-card-info">
+              <h3>Millionaire Playbook</h3>
+              <p>The next step in the series &mdash; practical moves to build and sustain what you create.</p>
+              <a class="book-amazon-link" href="https://www.amazon.com/dp/B0GQZ6DYCH" target="_blank" rel="noopener">
+                Order on Amazon &rarr;
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="books-controls">
+        <button class="books-nav-btn books-prev" type="button" aria-label="Previous books" data-books-prev>&larr;</button>
+        <div class="books-dots" role="tablist" aria-label="Book slides" data-books-dots></div>
+        <button class="books-nav-btn books-next" type="button" aria-label="Next books" data-books-next>&rarr;</button>
+      </div>
     </div>
+
   </div>
 </section>
 
-<!-- ============ 6. SPEAKER SHEET DOWNLOAD ============ -->
-<section class="section section-dark speaker-sheet" id="speaker-sheet">
+<!-- ============ 8. SPEAKER SHEET DOWNLOAD ============ -->
+<section class="section speaker-sheet" id="speaker-sheet">
   <div class="wrap">
     <div class="sheet-copy">
       <p class="eyebrow">One Page, Everything You Need</p>
       <h2 class="section-title reveal">Booking WD to Speak?</h2>
       <p class="section-lede reveal">
-        Get WD's one-page speaker sheet &mdash; his core promise, signature talks, ideal audiences, speaking formats,
-        and credentials &mdash; in one downloadable PDF you can share with your team or event committee.
+        Get WD's one-page speaker sheet &mdash; core promise, signature talks, ideal audiences, speaking formats,
+        and credentials &mdash; in one downloadable PDF for your team or event committee.
       </p>
-      <a class="btn btn-gold btn-lg" href="assets/WD_Brown_Speaker_Sheet.pdf" download>
-        Download the Speaker Sheet (PDF)
-      </a>
+      <div class="sheet-actions reveal">
+        <a class="btn btn-gold btn-lg" href="assets/WD_Brown_Speaker_Sheet.pdf" download>
+          <svg class="icon-inline" aria-hidden="true"><use href="#ico-download"></use></svg> Download Speaker Sheet (PDF)
+        </a>
+      </div>
 
       <p class="sheet-quote reveal">
         &ldquo;WD does not simply help people reach the next level. He helps them become whole enough to sustain it.&rdquo;
       </p>
+
+      <!-- The paste-ready bio for event programs. Approved copy, doc section 2. -->
+      <div class="std-bio reveal">
+        <div class="std-bio-head">
+          <h3 class="sub-title">Standard Speaker Bio</h3>
+          <button class="btn btn-ghost btn-sm" type="button" data-copy="#std-bio-text">Copy bio</button>
+        </div>
+        <div class="std-bio-text" id="std-bio-text">
+          <p>
+            WD Brown is an entrepreneur, author, mentor, and founder of Vision Buildaz, the movement
+            behind You Ready? Let's Grow!&reg; After helping build two companies, including a staffing
+            company that reached seven figures, WD turned his attention toward helping others pursue
+            success without losing themselves along the way.
+          </p>
+          <p>
+            For more than 30 years, he has mentored entrepreneurs, leaders, young adults, and people
+            rebuilding after difficult seasons. Through his Focus Filter approach and Mindset Before
+            Millions message, WD helps individuals cut through distractions and develop the mental,
+            emotional, spiritual, and practical foundation needed to sustain success.
+          </p>
+          <p>
+            Known for his ability to listen deeply and speak directly to the heart of an issue, WD does
+            more than inspire audiences. He helps people reset, refocus, and move forward with intention.
+            His mission is to help people reach their destination whole.
+          </p>
+        </div>
+      </div>
     </div>
 
-    <!-- Photo is absolutely positioned inside this column, so it contributes no
-         height — the copy column alone sets how tall the section is. -->
     <div class="sheet-photo" aria-hidden="true">
-      <img src="assets/wd-speaker-sheet.webp" width="539" height="900" loading="lazy" alt="">
+      <img src="assets/wd-speaker-sheet.webp" width="539" height="900" loading="lazy" alt="WD Brown Speaker Sheet Preview">
     </div>
   </div>
 </section>
 
-<!-- ============ 7. CONTACT / BOOKING ============ -->
-<section class="section" id="contact">
+<!-- ============ 9. CONTACT / BOOKING ============ -->
+<section class="section section-tint" id="contact">
   <div class="wrap wrap-narrow">
-    <p class="eyebrow eyebrow-dark">Booking</p>
-    <h2 class="section-title reveal">You Ready? Let's Grow.</h2>
+    <p class="eyebrow eyebrow-dark">Booking Inquiry</p>
+    <h2 class="section-title reveal">You Ready? Let's Grow!</h2>
     <p class="section-lede reveal">
-      Ready to bring this message to your stage, team, or community? Tell us a bit about your event and we'll
-      follow up soon &mdash; typically within 1&ndash;2 business days.
+      Ready to bring this message to your stage, team, or community? Tell us about your event and we'll
+      follow up promptly &mdash; typically within 1&ndash;2 business days.
     </p>
 
     <form class="booking-form reveal-group" id="booking-form" novalidate>
@@ -654,7 +839,7 @@
                   placeholder="Audience, format, location, and anything else we should know."></textarea>
       </div>
 
-      <!-- Honeypot: hidden from people, irresistible to bots. Checked server-side. -->
+      <!-- Honeypot -->
       <div class="honeypot" aria-hidden="true">
         <label for="website">Website</label>
         <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
@@ -670,42 +855,80 @@
 
 </main>
 
-<!-- ============ 8. FOOTER ============ -->
-<footer class="footer">
-  <div class="wrap">
-    <p class="footer-brand">WD Brown</p>
-    <p class="footer-tag">
-      <span class="nowrap">You Ready? Let's Grow!&reg;</span> &middot; Founder of Vision Buildaz
-    </p>
+<!-- Floating reel launcher. Pinned bottom-right for the whole page, hero
+     included. Dismissable; JS only handles the close button. -->
+<aside class="reel-float" id="reel-float">
+  <a class="reel-float-link" href="#speaker-reel">
+    <span class="reel-float-thumb">
+      <img src="assets/wd-hero.webp" width="936" height="1200" loading="lazy" alt="">
+      <span class="reel-float-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
+    </span>
+    <span class="reel-float-text">
+      <strong>Watch the speaker reel</strong>
+      <span>See WD on stage</span>
+    </span>
+  </a>
+  <button class="reel-float-close" type="button" id="reel-float-close" aria-label="Hide the speaker reel shortcut">&times;</button>
+</aside>
 
-    <ul class="social">
+<!-- ============ 10. FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand-col">
+      <img class="footer-logo" src="assets/logo-yrlg.webp" width="637" height="410" loading="lazy"
+           alt="You Ready? Let's Grow!">
+      <p class="footer-tag">
+        Speaking, mentorship, and books from WD Brown &mdash; founder of Vision Buildaz.
+        Helping people reach their destination whole.
+      </p>
+
+      <ul class="social">
       <li><a href="https://www.instagram.com/visionbuildaz" target="_blank" rel="noopener" aria-label="Instagram"><svg><use href="#icon-instagram"></use></svg></a></li>
       <li><a href="https://www.youtube.com/@visionbuildaz" target="_blank" rel="noopener" aria-label="YouTube"><svg><use href="#icon-youtube"></use></svg></a></li>
       <li><a href="https://www.tiktok.com/@visionbuildaz" target="_blank" rel="noopener" aria-label="TikTok"><svg><use href="#icon-tiktok"></use></svg></a></li>
       <li><a href="https://www.facebook.com/visionbuildaz" target="_blank" rel="noopener" aria-label="Facebook"><svg><use href="#icon-facebook"></use></svg></a></li>
-      <!-- TODO: confirm the LinkedIn company URL before launch. The live Wix site links a
-           regional Israel URL (il.linkedin.com/company/visionbuildaz) by mistake. -->
-      <li><a href="https://www.linkedin.com/company/visionbuildaz" target="_blank" rel="noopener" aria-label="LinkedIn — Vision Buildaz" data-todo="verify-url"><svg><use href="#icon-linkedin"></use></svg></a></li>
+      <li><a href="https://www.linkedin.com/company/visionbuildaz" target="_blank" rel="noopener" aria-label="LinkedIn — Vision Buildaz"><svg><use href="#icon-linkedin"></use></svg></a></li>
       <li><a href="https://www.linkedin.com/in/wmdbrown" target="_blank" rel="noopener" aria-label="LinkedIn — WD Brown"><svg><use href="#icon-linkedin"></use></svg></a></li>
-      <li><a href="https://linktr.ee/visionbuildaz" target="_blank" rel="noopener" aria-label="Linktree"><svg><use href="#icon-link"></use></svg></a></li>
-    </ul>
+        <li><a href="https://linktr.ee/visionbuildaz" target="_blank" rel="noopener" aria-label="Linktree"><svg><use href="#icon-link"></use></svg></a></li>
+      </ul>
+    </div>
 
+    <nav class="footer-nav" aria-label="Footer">
+      <div>
+        <h2 class="footer-heading">Explore</h2>
+        <ul>
+          <li><a href="#speaking">Speaking</a></li>
+          <li><a href="#speaker-reel">Speaker Reel</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+          <li><a href="#meet-wd">Meet WD</a></li>
+          <li><a href="#books">Books</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="footer-heading">For Organizers</h2>
+        <ul>
+          <li><a href="assets/WD_Brown_Speaker_Sheet.pdf" download>Speaker sheet (PDF)</a></li>
+          <li><a href="#speaking">Topics &amp; formats</a></li>
+          <li><a href="#books">Bulk book packages</a></li>
+          <li><a href="#contact">Request pricing</a></li>
+          <li><a href="#contact">Book WD to speak</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="wrap footer-bottom">
     <p class="copyright">
-      &copy; <span id="year">2026</span> WD Brown. <span class="nowrap">You Ready? Let's Grow!&reg;</span>
+      &copy; <span id="year">2026</span> WD Brown. <span class="nowrap">You Ready? Let's Grow!&reg;</span> &bull; All Rights Reserved.
+    </p>
+    <!-- Vision Buildaz sits as the parent brand. -->
+    <p class="footer-vb">
+      <img src="assets/logo-vb.webp" width="520" height="325" loading="lazy" alt="Vision Buildaz">
     </p>
   </div>
 </footer>
 
-<!-- ============ SMS / EMAIL SIGNUP MODAL ============
-     Native <dialog>: focus trap, Escape-to-close, background inerting and the
-     ::backdrop are all free. No modal library.
-
-     TODO (before launch): the form currently posts to /api/subscribe, which just
-     relays the signup to the booking inbox so no lead is lost. SMS marketing
-     consent has to be recorded by the provider that actually sends the texts —
-     the client is on Keap (their terms page is a myklpages.com URL), so this
-     should be repointed at the Keap form action or replaced with Keap's embed
-     before any texts go out. Do not send marketing SMS off this interim path. -->
+<!-- ============ SMS / EMAIL SIGNUP MODAL ============ -->
 <dialog class="signup" id="signup-modal" aria-labelledby="signup-title">
   <form method="dialog" class="signup-dismiss">
     <button value="close" aria-label="Close">&times;</button>
@@ -718,10 +941,9 @@
     </div>
 
     <div class="signup-body">
-      <h2 id="signup-title">We're Live Every Tuesday &amp; Thursday at 7PM EST!</h2>
+      <h2 id="signup-title">Free Weekly Live Coaching Sessions</h2>
       <p class="signup-lede">
-        Free coaching, mindset shifts, encouragement, and conversations that help you move forward.
-        Tuesdays &amp; Thursdays at 7PM EST.
+        Join WD Brown live every Tuesday &amp; Thursday at 7:00 PM EST for mindset shifts, Q&amp;A, and growth conversations.
       </p>
 
       <form id="signup-form" novalidate>
@@ -740,11 +962,8 @@
         </div>
 
         <p class="signup-consent">
-          By submitting this form and signing up for texts, you consent to receive marketing text
-          messages (e.g. promos, cart reminders) from Vision Buildaz, LLC at the number provided,
-          including messages sent by autodialer. Consent is not a condition of purchase. Msg &amp;
-          data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or
-          clicking the unsubscribe link (where available).
+          By submitting this form and signing up for texts, you consent to receive text messages from Vision Buildaz, LLC.
+          Unsubscribe at any time by replying STOP.
           <a href="https://www.visionbuildaz.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
           &amp;
           <a href="https://vision-buildaz.myklpages.com/p/mobile-terms-of-service" target="_blank" rel="noopener">Terms</a>.
@@ -754,13 +973,13 @@
         <input type="email" id="signup-email" name="email" placeholder="Enter your email address"
                autocomplete="email" required maxlength="200">
 
-        <!-- Honeypot, same approach as the booking form. -->
+        <!-- Honeypot -->
         <div class="honeypot" aria-hidden="true">
           <label for="signup-company">Company</label>
           <input type="text" id="signup-company" name="company" tabindex="-1" autocomplete="off">
         </div>
 
-        <button type="submit" class="signup-submit">Subscribe</button>
+        <button type="submit" class="signup-submit">Subscribe for Reminders</button>
         <p class="signup-status" id="signup-status" role="status" aria-live="polite"></p>
       </form>
     </div>
