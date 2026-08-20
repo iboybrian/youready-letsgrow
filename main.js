@@ -128,36 +128,44 @@ if (carousel) {
 }
 
 /* ---- floating reel launcher ------------------------------------------ */
-// Pinned bottom-right from the first paint, hero included.
-// Dismissal only lasts the visit; the reel section is still linked from the nav,
-// so closing it never makes anything unreachable.
+// Pinned bottom-right, plays the reel inside itself. It is the only route to the
+// reel now that the section is gone, and it stays off the page until there is a
+// video: putting a YouTube id on data-video-id in the markup is the whole switch.
 
 const reelFloat = document.getElementById('reel-float');
-if (reelFloat) {
+const reelId = reelFloat?.dataset.videoId;
+const heroReelBtn = document.getElementById('hero-reel-btn');
+
+// No reel yet: the bubble leaves the page and the hero button stays hidden. Both
+// are held rather than deleted so one id in the markup brings back both.
+if (reelFloat && !reelId) reelFloat.remove();
+
+if (reelFloat && reelId) {
+  reelFloat.hidden = false;
   const floatLink = reelFloat.querySelector('.reel-float-link');
 
-  // The reel section's facade is the single source of truth for the video id, so
-  // dropping data-video-id there lights up the bubble too. Until then both show
-  // the same "coming soon" message.
-  const source = document.getElementById('reel-facade');
-
-  floatLink.addEventListener('click', event => {
-    event.preventDefault();   // play here, don't jump to the section
-    const id = source?.dataset.videoId;
-
-    if (!id) {
-      alert("Official WD Brown Speaker Reel video coming soon! Swap video URL ready.");
-      return;
-    }
-
+  const playReel = () => {
+    if (reelFloat.classList.contains('is-playing')) return;
     const frame = document.createElement('iframe');
-    frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
+    frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(reelId)}?autoplay=1&rel=0`;
     frame.title = 'WD Brown speaker reel';
     frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
     frame.allowFullscreen = true;
     floatLink.replaceWith(frame);
+    reelFloat.classList.remove('is-dismissed');
     reelFloat.classList.add('is-playing');
+  };
+
+  floatLink.addEventListener('click', event => {
+    event.preventDefault();   // play here, don't send anyone to YouTube
+    playReel();
   });
+
+  // The hero button drives the same bubble — one player, one place it plays.
+  if (heroReelBtn) {
+    heroReelBtn.hidden = false;
+    heroReelBtn.addEventListener('click', playReel);
+  }
 
   document.getElementById('reel-float-close')
     ?.addEventListener('click', () => reelFloat.classList.add('is-dismissed'));
@@ -171,22 +179,28 @@ groups.forEach(group => {
   [...group.children].forEach((child, i) => child.style.setProperty('--i', i));
 });
 
+const showAll = els => els.forEach(el => el.classList.add('is-visible'));
+
 const revealTargets = document.querySelectorAll('.reveal, .reveal-group');
 if (revealTargets.length) {
-  const revealer = new IntersectionObserver((entries, self) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      entry.target.classList.add('is-visible');
-      self.unobserve(entry.target); // reveal once, never re-hide on scroll up
-    }
-  }, { rootMargin: '300px 0px 300px 0px', threshold: 0 });
+  // The safety net is "no observer", not "page loaded". A load handler used to
+  // force every target visible, which on any normal connection fired before the
+  // user had scrolled anywhere — so the fade-in never actually played.
+  if (!('IntersectionObserver' in window)) {
+    showAll(revealTargets);
+  } else {
+    const revealer = new IntersectionObserver((entries, self) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add('is-visible');
+        self.unobserve(entry.target); // reveal once, never re-hide on scroll up
+      }
+    // Negative bottom margin: fire once the element is properly in view, not
+    // 300px early, or the fade is over before it reaches the screen.
+    }, { rootMargin: '0px 0px -80px 0px', threshold: 0 });
 
-  revealTargets.forEach(el => revealer.observe(el));
-
-  // Guarantee all elements are revealed on page load
-  window.addEventListener('load', () => {
-    revealTargets.forEach(el => el.classList.add('is-visible'));
-  });
+    revealTargets.forEach(el => revealer.observe(el));
+  }
 }
 
 /* ---- counting stats -------------------------------------------------- */
@@ -228,63 +242,14 @@ if (counters.length) {
   counters.forEach(el => counterObserver.observe(el));
 }
 
-/* ---- testimonials carousel ------------------------------------------- */
-// Coverflow: centre card, one either side, the rest off-stage. Positions are
-// classes; CSS owns the transforms.
+/* ---- testimonials wall ------------------------------------------------ */
+// Every clip is on screen at once, so there is no rotation to manage — all that
+// is left is the facade -> player swap. The one-player rule still stands: with a
+// grid it is *easier* to end up with several iframes talking over each other.
 
 const testimonials = document.querySelector('[data-testimonials]');
 if (testimonials) {
-  const cards = [...testimonials.querySelectorAll('[data-t-slide]')];
-  const dotsBox = testimonials.querySelector('[data-t-dots]');
-  const INTERVAL = 6000;   // 2s was faster than the quote can be read
-  let index = 0;
-  let timer = null;
-  let locked = false; // a video is loaded — never rotate it out from under someone
-
-  const dots = cards.map((_, i) => {
-    const dot = document.createElement('button');
-    dot.type = 'button';
-    dot.className = 't-dot';
-    dot.setAttribute('role', 'tab');
-    dot.setAttribute('aria-label', `Testimonial ${i + 1} of ${cards.length}`);
-    dot.addEventListener('click', () => { show(i); restart(); });
-    dotsBox.appendChild(dot);
-    return dot;
-  });
-
-  function show(next) {
-    const count = cards.length;
-    index = (next + count) % count;
-    const prev = (index - 1 + count) % count;
-    const after = (index + 1) % count;
-
-    cards.forEach((card, i) => {
-      card.classList.toggle('is-center', i === index);
-      card.classList.toggle('is-prev', i === prev);
-      card.classList.toggle('is-next', i === after);
-      // Off-stage cards must not be tab stops.
-      const offstage = i !== index && i !== prev && i !== after;
-      card.querySelectorAll('button, iframe, a').forEach(el => {
-        el.tabIndex = offstage ? -1 : 0;
-      });
-    });
-    dots.forEach((d, i) => d.setAttribute('aria-selected', String(i === index)));
-  }
-
-  const stop = () => clearInterval(timer);
-  const start = () => {
-    stop();
-    if (locked) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    timer = setInterval(() => show(index + 1), INTERVAL);
-  };
-  const restart = () => { stop(); start(); };
-
-  testimonials.addEventListener('mouseenter', stop);
-  testimonials.addEventListener('mouseleave', start);
-  testimonials.addEventListener('focusin', stop);
-  testimonials.addEventListener('focusout', start);
-  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+  let playing = null; // { iframe, facade } of the one video allowed to run
 
   // Facade -> real player. Nothing is requested from YouTube until this runs, so
   // the page sets no third-party cookies on load. nocookie domain either way.
@@ -302,26 +267,21 @@ if (testimonials) {
 
     if (!id) return;
 
+    // One player at a time. Swapping the running iframe back for its own facade
+    // destroys it, which is what actually stops the audio — otherwise opening a
+    // second testimonial left both playing over each other.
+    if (playing) {
+      playing.iframe.replaceWith(playing.facade);
+      playing = null;
+    }
+
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
     iframe.title = facade.closest('.t-card').querySelector('.t-name')?.textContent || 'Testimonial';
     iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     facade.replaceWith(iframe);
-
-    locked = true;   // stop auto-rotation for good once someone is watching
-    stop();
-  });
-
-  show(0);
-  start();
-}
-
-/* ---- speaker reel handler -------------------------------------------- */
-const reelFacade = document.getElementById('reel-facade');
-if (reelFacade) {
-  reelFacade.addEventListener('click', () => {
-    alert("Official WD Brown Speaker Reel video coming soon! Swap video URL ready.");
+    playing = { iframe, facade };   // facade node stays alive, ready to go back
   });
 }
 
@@ -507,69 +467,6 @@ if (navigator.clipboard) {
   });
 }
 
-/* ---- booking form ---------------------------------------------------- */
-
-const form = document.getElementById('booking-form');
-const status = document.getElementById('form-status');
-
-function clearErrors() {
-  form.querySelectorAll('.has-error').forEach(f => f.classList.remove('has-error'));
-  form.querySelectorAll('.field-error').forEach(e => e.remove());
-}
-
-function showError(input, msg) {
-  const field = input.closest('.field');
-  if (!field) return; // honeypot and other non-field inputs
-  field.classList.add('has-error');
-  const p = document.createElement('p');
-  p.className = 'field-error';
-  p.textContent = msg;
-  field.appendChild(p);
-}
-
-function setStatus(msg, kind) {
-  status.textContent = msg;
-  status.className = 'form-status' + (kind ? ' is-' + kind : '');
-}
-
-form.addEventListener('submit', async event => {
-  event.preventDefault();
-  clearErrors();
-  setStatus('');
-
-  // Native constraint validation: required + email format, no library.
-  const invalid = [...form.elements].filter(el => el.willValidate && !el.checkValidity());
-  if (invalid.length) {
-    invalid.forEach(el => showError(el, el.validationMessage));
-    invalid[0].focus();
-    setStatus('Please fix the highlighted fields.', 'error');
-    return;
-  }
-
-  const button = form.querySelector('button[type="submit"]');
-  button.disabled = true;
-  setStatus('Sending…');
-
-  try {
-    const response = await fetch('/api/book', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.fromEntries(new FormData(form))),
-    });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({}));
-      throw new Error(body.error || 'Request failed (' + response.status + ')');
-    }
-
-    form.reset();
-    setStatus('Thank you — your inquiry is on its way. We typically respond within 1–2 business days.', 'ok');
-  } catch (error) {
-    setStatus(
-      error.message + ' — please try again, or email us directly at vision@visionbuildaz.com.',
-      'error'
-    );
-  } finally {
-    button.disabled = false;
-  }
-});
+/* The booking form's submit handler lived here. It went with the form when booking
+   moved to the client's CRM — the section is now a single outbound link, which needs
+   no JS. api/book.js and its test are still in the repo, dormant. */

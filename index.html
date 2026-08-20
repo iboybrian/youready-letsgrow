@@ -33,7 +33,10 @@
 <a class="skip-link" href="#main">Skip to content</a>
 
 <!-- Icon sprite. Defined before any <use> that references it. All symbols share a
-     24x24 grid, stroke currentColor, so a single CSS colour drives every icon. -->
+     24x24 grid, stroke currentColor, so a single CSS colour drives every icon.
+     Note: the audience/format symbols below are unreferenced since the client cut
+     those sections (batch 1, point 8). Kept because they cost ~1.5KB and would have
+     to be redrawn if the lists come back — delete if that call becomes final. -->
 <svg class="icon-defs" aria-hidden="true" focusable="false">
   <!-- social -->
   <symbol id="icon-instagram" viewBox="0 0 24 24">
@@ -162,7 +165,6 @@
     <nav id="primary-nav" aria-label="Primary">
       <ul class="nav-links">
         <li><a href="#speaking">Speaking</a></li>
-        <li><a href="#speaker-reel">Speaker Reel</a></li>
         <li><a href="#testimonials">Testimonials</a></li>
         <li><a href="#meet-wd">Meet WD</a></li>
         <li><a href="#books">Books</a></li>
@@ -200,7 +202,7 @@
         <span class="word"><span>You</span></span>
         <span class="word"><span>Ready?</span></span><br class="line-break">
         <span class="word"><span>Let's</span></span>
-        <span class="word"><span>Grow!&reg;</span></span>
+        <span class="word"><span>Grow!<sup>&reg;</sup></span></span>
       </h1>
 
       <!-- The rotating lede is now the only carousel track in the hero, so it
@@ -224,8 +226,13 @@
 
       <div class="hero-ctas hero-fade">
         <a class="btn btn-gold btn-lg" href="#contact">Book WD to Speak</a>
-        <a class="btn btn-ghost btn-lg" href="#speaker-reel">Watch Speaker Reel</a>
-        <a class="btn btn-ghost-subtle" href="assets/WD_Brown_Speaker_Sheet.pdf" download>
+        <!-- Held, not removed: the client wants this button back, but it has nowhere
+             to point until there is a reel. It stays hidden and main.js unhides it
+             the moment #reel-float carries a data-video-id — one switch, both. -->
+        <button class="btn btn-ghost btn-lg" type="button" id="hero-reel-btn" hidden>
+          <svg class="icon-inline" aria-hidden="true"><use href="#ico-play"></use></svg> Watch Speaker Reel
+        </button>
+        <a class="btn btn-ghost btn-lg" href="assets/WD_Brown_Speaker_Sheet.pdf" download>
           <svg class="icon-inline" aria-hidden="true"><use href="#ico-download"></use></svg> Download Speaker Sheet (PDF)
         </a>
       </div>
@@ -263,24 +270,13 @@
   </div>
 </div>
 
-<!-- ============ 2. CORE PROMISE / WHY HIRE WD ============ -->
-<section class="section" id="promise">
+<!-- ============ 2. WHY WD ============ -->
+<!-- The Core Speaker Promise header was removed at the client's request (batch 1,
+     point 6). What survived is this block: the four primary value propositions,
+     verbatim from the approved speaker sheet, plus the credibility snapshot. -->
+<section class="section" id="why-wd">
   <div class="wrap">
-    <div class="promise-header reveal">
-      <img class="promise-logo" src="assets/logo-yrlg.webp" width="637" height="410"
-           alt="You Ready? Let's Grow!">
-      <p class="eyebrow promise-eyebrow">The Core Speaker Promise</p>
-      <h2 class="section-title promise-title">His message goes beyond motivation.</h2>
-      <p class="section-lede">
-        WD helps entrepreneurs, leaders, and audiences examine who they are becoming while they pursue what they want &mdash; building success they are prepared to sustain.
-      </p>
-    </div>
-
-    <!-- WHY WD. Dark panel inside a light section, so it sits between the promise
-         header and the booking banner without needing its own section. The four
-         primary value propositions are verbatim from the approved speaker sheet;
-         the card fills alternate on purpose, per the layout the client referenced. -->
-    <div class="why-panel reveal" id="why-wd">
+    <div class="why-panel reveal">
       <p class="eyebrow">Why WD</p>
       <h2 class="section-title why-title">Why is WD the person you're looking for?</h2>
       <p class="section-lede">
@@ -301,34 +297,32 @@
           <h3>Wisdom grounded in experience</h3>
           <p>His message is informed by building businesses, creating wealth, navigating setbacks, mentoring others, and learning what success requires beyond strategy.</p>
         </li>
-        <li class="why-card why-card-paper">
+        <li class="why-card why-card-ink">
           <h3>Transformation beyond motivation</h3>
           <p>Audiences leave with a clearer mindset, stronger direction, and practical questions they can use to make better decisions.</p>
         </li>
       </ul>
 
-      <!-- Credibility snapshot — approved doc, section 2. -->
-      <ul class="creds reveal-group">
-        <li><span data-count="30" data-suffix="+">30+</span> years of mentorship</li>
-        <li><span data-count="2" data-suffix="&times;">2&times;</span> seven-figure company experience</li>
-        <li><span>Multiple</span> businesses built</li>
-        <li><span>Real estate</span> experience</li>
-        <li><span>Author</span> of <em>Mindset Before Millions</em></li>
-        <li><span data-count="300000" data-suffix="+">300,000+</span> digital message views</li>
-      </ul>
-    </div>
-
-    <!-- Mid-Page Call to Action Banner -->
-    <div class="cta-banner reveal">
-      <div class="cta-banner-text">
-        <h3>Ready to bring clarity and momentum to your next event?</h3>
-        <p>Check WD Brown's speaking calendar and inquire for date availability.</p>
-      </div>
-      <div class="cta-banner-actions">
-        <a class="btn btn-gold btn-lg" href="#contact">Book WD to Speak</a>
-        <a class="btn btn-ghost btn-lg" href="assets/WD_Brown_Speaker_Sheet.pdf" download>
-          <svg class="icon-inline" aria-hidden="true"><use href="#ico-download"></use></svg> Speaker Sheet (PDF)
-        </a>
+      <!-- Credibility snapshot — approved doc, section 2. The stats hold the left
+           and the standing cutout fills the empty right half the block used to
+           leave behind. Below 860px it stacks and the stats run two across. -->
+      <div class="creds-layout">
+        <ul class="creds reveal-group">
+          <li><span data-count="30" data-suffix="+">30+</span> years of mentorship</li>
+          <li><span data-count="2" data-suffix="&times;">2&times;</span> seven-figure company experience</li>
+          <li><span>Multiple</span> businesses built</li>
+          <li><span>Real estate</span> experience</li>
+          <li><span>Author</span> of <em>Mindset Before Millions</em></li>
+          <li><span data-count="300000" data-suffix="+">300,000+</span> digital message views</li>
+        </ul>
+        <!-- 5:4 crop of the stage shot (original in assets/originals/). The source is
+             1844x2304 portrait; the crop trims ceiling and floor so it sits wide beside
+             the stats instead of towering over them, and still holds WD head to feet.
+             Replacing it means re-cropping to 5:4 — .creds-figure has no cover fallback. -->
+        <figure class="creds-figure reveal">
+          <img src="assets/wd-speaking-2.webp" width="1400" height="1119" loading="lazy"
+               alt="WD Brown speaking from a podium to a packed conference hall.">
+        </figure>
       </div>
     </div>
   </div>
@@ -364,7 +358,7 @@
     <h3 class="sub-title">Signature Speaking Topics</h3>
     <div class="topics reveal-group">
       <article class="topic">
-        <div class="topic-num">Topic 1</div>
+        <div class="topic-num"><span>01</span>Topic</div>
         <h4>Mindset Before Millions</h4>
         <p class="topic-line">Build the person who can sustain the success.</p>
         <ul>
@@ -374,7 +368,7 @@
         </ul>
       </article>
       <article class="topic">
-        <div class="topic-num">Topic 2</div>
+        <div class="topic-num"><span>02</span>Topic</div>
         <h4>Get There Whole</h4>
         <p class="topic-line">Reach your destination without losing yourself along the way.</p>
         <ul>
@@ -384,7 +378,7 @@
         </ul>
       </article>
       <article class="topic">
-        <div class="topic-num">Topic 3</div>
+        <div class="topic-num"><span>03</span>Topic</div>
         <h4>The Focus Filter</h4>
         <p class="topic-line">Cut through distractions and build with intention.</p>
         <ul>
@@ -394,7 +388,7 @@
         </ul>
       </article>
       <article class="topic">
-        <div class="topic-num">Topic 4</div>
+        <div class="topic-num"><span>04</span>Topic</div>
         <h4>Built for the Next Chapter</h4>
         <p class="topic-line">Use experience, humility, and adaptability to keep growing.</p>
         <ul>
@@ -404,182 +398,126 @@
         </ul>
       </article>
       <article class="topic topic-highlight">
-        <div class="topic-num">Topic 5</div>
+        <div class="topic-num"><span>05</span>Topic</div>
         <h4>Harvest Time</h4>
         <p class="topic-line">Now you're ready &mdash; go out and reap what you have sown.</p>
         <p class="topic-desc">An empowering closing address that calls audiences into decisive, aligned action.</p>
       </article>
     </div>
 
-    <div class="two-col reveal-group">
-      <div>
-        <h3 class="sub-title">Ideal Audiences</h3>
-        <ul class="tick">
-          <li><svg aria-hidden="true"><use href="#ico-briefcase"></use></svg>Entrepreneurs and business owners</li>
-          <li><svg aria-hidden="true"><use href="#ico-building"></use></svg>Corporate and nonprofit leaders</li>
-          <li><svg aria-hidden="true"><use href="#ico-steps"></use></svg>Leadership development programs</li>
-          <li><svg aria-hidden="true"><use href="#ico-sprout"></use></svg>Emerging leaders and young professionals</li>
-          <li><svg aria-hidden="true"><use href="#ico-rebound"></use></svg>People rebuilding after setbacks</li>
-          <li><svg aria-hidden="true"><use href="#ico-heart"></use></svg>Faith-centered and community organizations</li>
-          <li><svg aria-hidden="true"><use href="#ico-generations"></use></svg>Multigenerational business communities</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="sub-title">Speaking Formats</h3>
-        <ul class="tick">
-          <li><svg aria-hidden="true"><use href="#ico-mic"></use></svg>Keynotes</li>
-          <li><svg aria-hidden="true"><use href="#ico-flame"></use></svg>Fireside conversations</li>
-          <li><svg aria-hidden="true"><use href="#ico-easel"></use></svg>Leadership workshops</li>
-          <li><svg aria-hidden="true"><use href="#ico-mountain"></use></svg>Executive retreats</li>
-          <li><svg aria-hidden="true"><use href="#ico-panel"></use></svg>Panels</li>
-          <li><svg aria-hidden="true"><use href="#ico-circle-people"></use></svg>Community and faith events</li>
-          <li><svg aria-hidden="true"><use href="#ico-screen"></use></svg>Virtual presentations</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Bulk book packages. Moved out of the books section: it is an event-planning
-         ask, so it belongs with the formats an organiser is already reading. -->
-    <div class="books-bulk-cta reveal">
-      <p><strong>Planning an event, retreat, or executive session?</strong> Ask about bulk companion book &amp; workbook packages for your attendees.</p>
-      <a class="btn btn-gold" href="#contact">Inquire About Event Packages &rarr;</a>
-    </div>
   </div>
 </section>
 
-<!-- ============ 3b. STATEMENT ============ -->
-<!-- WD's own words, from the approved bio. Full-bleed and alone on purpose: it is the
-     one line that says what the whole talk is about. -->
-<section class="statement">
-  <div class="wrap">
-    <blockquote class="statement-quote reveal">
-      <p>
-        We're going to get you to the millions, but first, let's get your mind right.
-        Let's make sure your heart is right. Let's make sure you're mentally and emotionally
-        whole &mdash; because if that's not in place, the millions won't matter.
-      </p>
-      <cite>WD Brown</cite>
-    </blockquote>
-  </div>
-</section>
-
-<!-- ============ 4. DEDICATED SPEAKER REEL SHOWCASE ============ -->
-<section class="section section-dark speaker-reel-section" id="speaker-reel">
-  <div class="wrap">
-    <div class="reel-header reveal">
-      <p class="eyebrow">High-Impact Stage Highlights</p>
-      <h2 class="section-title">WD Brown Speaker Reel</h2>
-      <p class="section-lede">
-        Experience the energy, conviction, and deep connection WD brings to every stage and keynote address.
-      </p>
-    </div>
-
-    <div class="reel-container reveal">
-      <div class="reel-facade" id="reel-facade" data-video-placeholder="speaker-reel">
-        <img src="assets/wd-hero.webp" class="reel-poster" alt="WD Brown Speaking Live">
-        <div class="reel-glass-backdrop"></div>
-        <div class="reel-content">
-          <button class="reel-play-btn" type="button" aria-label="Play WD Brown Speaker Reel">
-            <svg aria-hidden="true"><use href="#ico-play"></use></svg>
-          </button>
-          <div class="reel-text">
-            <!-- TODO: runtime removed — no reel exists yet, so no duration can be stated.
-                 Restore "&bull; MM:SS" here once the real reel is delivered. -->
-            <span class="reel-badge">Keynote Highlights</span>
-            <h3 class="reel-title">&ldquo;You Ready? Let's Grow!&rdquo; Live Stage Experience</h3>
-            <p class="reel-sub">Watch WD Brown transform rooms and speak directly to the heart of leaders.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="reel-bottom-cta reveal">
-      <p>Want WD Brown to deliver a high-energy keynote or workshop for your organization?</p>
-      <a class="btn btn-gold" href="#contact">Request Pricing &amp; Availability &rarr;</a>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 5. VIDEO TESTIMONIALS ============ -->
+<!-- ============ 4. VIDEO TESTIMONIALS ============ -->
 <section class="section section-dark" id="testimonials">
   <div class="wrap">
     <div class="testimonials-header reveal">
       <p class="eyebrow">Video Testimonials</p>
-      <h2 class="section-title">Watch What Leaders &amp; Organizers Say</h2>
+      <h2 class="section-title">What People Say About WD</h2>
       <p class="section-lede">
         &ldquo;WD does not simply help people reach the next level. He helps them become whole enough to sustain it.&rdquo;
       </p>
     </div>
 
-    <div class="testimonials" data-testimonials>
-      <div class="t-stage">
-        <!-- Nellie Brown Testimonial Card (WD's Wife & Executive Leader) -->
-        <article class="t-card t-card-special" data-t-slide>
-          <!-- No photo of Nellie yet, and WD's portrait here read as if it were her.
-               Labelled placeholder until her footage arrives — ASSET-REQUEST.md #27. -->
-          <button class="t-facade" type="button" data-video-placeholder="nellie">
-            <span class="t-thumb t-thumb-pending">Nellie's testimonial &mdash; pending</span>
-            <span class="t-badge-custom">Co-Founder &amp; Executive Director</span>
-          </button>
-          <div class="t-meta">
-            <p class="t-quote">&ldquo;Success without wholeness isn't true success. WD lives what he teaches every single day.&rdquo;</p>
-            <p class="t-name">Nellie Brown</p>
-            <p class="t-role">First Lady of Vision Buildaz</p>
-          </div>
-        </article>
+    <!-- A wall, not a carousel: every clip is on screen at once and each one gets a
+         full 16:9 tile. It was briefly put back to a coverflow; the client prefers the
+         grid, which is what "more space per video" was about in the first place.
 
-        <article class="t-card" data-t-slide>
-          <button class="t-facade" type="button" data-video-id="y46I3ZRGgJw">
-            <span class="t-thumb"><img src="https://i.ytimg.com/vi/y46I3ZRGgJw/hqdefault.jpg" alt="Dr Omar Bali" loading="lazy"></span>
-            <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
-          </button>
-          <div class="t-meta">
-            <p class="t-quote">&ldquo;Such a privilege to learn from WD&rdquo;</p>
-            <p class="t-name">Dr Omar Bali</p>
-          </div>
-        </article>
+         Thumbnails are maxresdefault, not hqdefault: hqdefault is a 4:3 crop with
+         black bars baked in, which showed through at this tile size. maxres exists
+         for all four clips — check any new id before adding it, since YouTube only
+         generates maxres for HD uploads. -->
+    <div class="t-wall reveal-group" data-testimonials>
+      <article class="t-card">
+        <button class="t-facade" type="button" data-video-id="y46I3ZRGgJw">
+          <span class="t-thumb"><img src="https://i.ytimg.com/vi/y46I3ZRGgJw/maxresdefault.jpg" alt="Dr Omar Bali" loading="lazy"></span>
+          <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
+        </button>
+        <div class="t-meta">
+          <p class="t-quote">&ldquo;Such a privilege to learn from WD&rdquo;</p>
+          <p class="t-name">Dr Omar Bali</p>
+        </div>
+      </article>
 
-        <article class="t-card" data-t-slide>
-          <button class="t-facade" type="button" data-video-id="Kxf390Ihz3o">
-            <span class="t-thumb"><img src="https://i.ytimg.com/vi/Kxf390Ihz3o/hqdefault.jpg" alt="Yuen Yufeng" loading="lazy"></span>
-            <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
-          </button>
-          <div class="t-meta">
-            <p class="t-quote">&ldquo;His wisdom has accelerated my self development by years&rdquo;</p>
-            <p class="t-name">Yuen Yufeng</p>
-          </div>
-        </article>
+      <article class="t-card">
+        <button class="t-facade" type="button" data-video-id="Kxf390Ihz3o">
+          <span class="t-thumb"><img src="https://i.ytimg.com/vi/Kxf390Ihz3o/maxresdefault.jpg" alt="Yuen Yufeng" loading="lazy"></span>
+          <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
+        </button>
+        <div class="t-meta">
+          <p class="t-quote">&ldquo;His wisdom has accelerated my self development by years&rdquo;</p>
+          <p class="t-name">Yuen Yufeng</p>
+        </div>
+      </article>
 
-        <article class="t-card" data-t-slide>
-          <button class="t-facade" type="button" data-video-id="gAnbYMzjNJ8">
-            <span class="t-thumb"><img src="https://i.ytimg.com/vi/gAnbYMzjNJ8/hqdefault.jpg" alt="Edmon Khachatryan" loading="lazy"></span>
-            <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
-          </button>
-          <div class="t-meta">
-            <p class="t-quote">&ldquo;He helped me shift my mindset to build something that will last&rdquo;</p>
-            <p class="t-name">Edmon Khachatryan</p>
-          </div>
-        </article>
+      <article class="t-card">
+        <button class="t-facade" type="button" data-video-id="gAnbYMzjNJ8">
+          <span class="t-thumb"><img src="https://i.ytimg.com/vi/gAnbYMzjNJ8/maxresdefault.jpg" alt="Edmon Khachatryan" loading="lazy"></span>
+          <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
+        </button>
+        <div class="t-meta">
+          <p class="t-quote">&ldquo;He helped me shift my mindset to build something that will last&rdquo;</p>
+          <p class="t-name">Edmon Khachatryan</p>
+        </div>
+      </article>
 
-        <article class="t-card" data-t-slide>
-          <button class="t-facade" type="button" data-video-id="HHGzZHnCWFo">
-            <span class="t-thumb"><img src="https://i.ytimg.com/vi/HHGzZHnCWFo/hqdefault.jpg" alt="Nicholas Damien" loading="lazy"></span>
-            <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
-          </button>
-          <div class="t-meta">
-            <p class="t-quote">&ldquo;He helped me understand and embrace that achievement doesn't need to be hard&rdquo;</p>
-            <p class="t-name">Nicholas Damien</p>
-          </div>
-        </article>
-      </div>
+      <article class="t-card">
+        <button class="t-facade" type="button" data-video-id="HHGzZHnCWFo">
+          <span class="t-thumb"><img src="https://i.ytimg.com/vi/HHGzZHnCWFo/maxresdefault.jpg" alt="Nicholas Damien" loading="lazy"></span>
+          <span class="t-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
+        </button>
+        <div class="t-meta">
+          <p class="t-quote">&ldquo;He helped me understand and embrace that achievement doesn't need to be hard&rdquo;</p>
+          <p class="t-name">Nicholas Damien</p>
+        </div>
+      </article>
 
-      <div class="t-dots" role="tablist" aria-label="Choose testimonial" data-t-dots></div>
+      <!-- Placeholders held for footage that has not arrived. No quote, no role: we
+           have the names (or not) and nothing else, and inventing a testimonial is
+           the one thing this build never does. Wire each one by swapping
+           data-video-placeholder for data-video-id and adding the real quote.
+           ASSET-REQUEST.md #27. -->
+      <article class="t-card">
+        <button class="t-facade" type="button" data-video-placeholder="james-dumoulin">
+          <span class="t-thumb t-thumb-pending">James Dumoulin's testimonial &mdash; pending</span>
+        </button>
+        <div class="t-meta">
+          <p class="t-name">James Dumoulin</p>
+        </div>
+      </article>
+
+      <article class="t-card">
+        <button class="t-facade" type="button" data-video-placeholder="tbc-1">
+          <span class="t-thumb t-thumb-pending">Testimonial &mdash; pending</span>
+        </button>
+      </article>
+
+      <article class="t-card">
+        <button class="t-facade" type="button" data-video-placeholder="tbc-2">
+          <span class="t-thumb t-thumb-pending">Testimonial &mdash; pending</span>
+        </button>
+      </article>
+
+      <!-- Nellie Brown — WD's wife and co-founder. Last in the wall on purpose: she is
+           the only pending tile that already has an approved quote, and leading the
+           grid with a placeholder undersold four real clips. ASSET-REQUEST.md #27. -->
+      <article class="t-card t-card-special">
+        <button class="t-facade" type="button" data-video-placeholder="nellie">
+          <span class="t-thumb t-thumb-pending">Nellie's testimonial &mdash; pending</span>
+          <span class="t-badge-custom">Co-Founder &amp; Executive Director</span>
+        </button>
+        <div class="t-meta">
+          <p class="t-quote">&ldquo;Success without wholeness isn't true success. WD lives what he teaches every single day.&rdquo;</p>
+          <p class="t-name">Nellie Brown</p>
+          <p class="t-role">First Lady of Vision Buildaz</p>
+        </div>
+      </article>
     </div>
 
   </div>
 </section>
 
-<!-- ============ 6. MEET WD ============ -->
+<!-- ============ 5. MEET WD ============ -->
 <section class="section" id="meet-wd">
   <div class="wrap">
     <div class="bio-layout reveal-group">
@@ -648,7 +586,7 @@
   </div>
 </section>
 
-<!-- ============ 7. BOOKS & WORKBOOKS ============ -->
+<!-- ============ 6. BOOKS & WORKBOOKS ============ -->
 <section class="section section-tint" id="books">
   <div class="wrap">
     <p class="eyebrow eyebrow-dark">YOU READY? LET'S GROW! SERIES</p>
@@ -752,19 +690,31 @@
   </div>
 </section>
 
-<!-- ============ 8. SPEAKER SHEET DOWNLOAD ============ -->
-<section class="section speaker-sheet" id="speaker-sheet">
+<!-- ============ 7. SPEAKER SHEET + BOOKING ============ -->
+<!-- These were two sections until 20 Aug: the sheet download and a separate
+     "Booking Inquiry" block. The client merged them — one section, both calls to
+     action side by side. #contact lives here now; the nav still points at it. -->
+<section class="section speaker-sheet" id="contact">
   <div class="wrap">
     <div class="sheet-copy">
       <p class="eyebrow">One Page, Everything You Need</p>
       <h2 class="section-title reveal">Booking WD to Speak?</h2>
       <p class="section-lede reveal">
         Get WD's one-page speaker sheet &mdash; core promise, signature talks, ideal audiences, speaking formats,
-        and credentials &mdash; in one downloadable PDF for your team or event committee.
+        and credentials &mdash; in one downloadable PDF for your team or event committee. Want to bring this
+        message to your team? Start your booking request below and we'll follow up within 2 business days.
       </p>
       <div class="sheet-actions reveal">
         <a class="btn btn-gold btn-lg" href="assets/WD_Brown_Speaker_Sheet.pdf" download>
           <svg class="icon-inline" aria-hidden="true"><use href="#ico-download"></use></svg> Download Speaker Sheet (PDF)
+        </a>
+        <!-- TODO: waiting on the CRM booking-page URL. Until it lands this opens the
+             booking inbox by email so no lead is dropped — swap the one href below
+             for the CRM link and delete data-todo. Nothing else to change. The old
+             embedded form (api/book.js + its main.js block) is in git history. -->
+        <a class="btn btn-gold btn-lg" href="mailto:vision@visionbuildaz.com?subject=Speaking%20inquiry%20for%20WD%20Brown"
+           data-todo="Replace with the CRM booking page URL (ASSET-REQUEST #32)">
+          I'm Ready, Let's Grow!
         </a>
       </div>
 
@@ -779,12 +729,6 @@
           <button class="btn btn-ghost btn-sm" type="button" data-copy="#std-bio-text">Copy bio</button>
         </div>
         <div class="std-bio-text" id="std-bio-text">
-          <p>
-            WD Brown is an entrepreneur, author, mentor, and founder of Vision Buildaz, the movement
-            behind You Ready? Let's Grow!&reg; After helping build two companies, including a staffing
-            company that reached seven figures, WD turned his attention toward helping others pursue
-            success without losing themselves along the way.
-          </p>
           <p>
             For more than 30 years, he has mentored entrepreneurs, leaders, young adults, and people
             rebuilding after difficult seasons. Through his Focus Filter approach and Mindset Before
@@ -806,61 +750,17 @@
   </div>
 </section>
 
-<!-- ============ 9. CONTACT / BOOKING ============ -->
-<section class="section section-tint" id="contact">
-  <div class="wrap wrap-narrow">
-    <p class="eyebrow eyebrow-dark">Booking Inquiry</p>
-    <h2 class="section-title reveal">You Ready? Let's Grow!</h2>
-    <p class="section-lede reveal">
-      Ready to bring this message to your stage, team, or community? Tell us about your event and we'll
-      follow up promptly &mdash; typically within 1&ndash;2 business days.
-    </p>
-
-    <form class="booking-form reveal-group" id="booking-form" novalidate>
-      <div class="field">
-        <label for="name">Name <span aria-hidden="true">*</span></label>
-        <input type="text" id="name" name="name" autocomplete="name" required maxlength="120">
-      </div>
-      <div class="field">
-        <label for="email">Email <span aria-hidden="true">*</span></label>
-        <input type="email" id="email" name="email" autocomplete="email" required maxlength="200">
-      </div>
-      <div class="field">
-        <label for="organization">Organization</label>
-        <input type="text" id="organization" name="organization" autocomplete="organization" maxlength="200">
-      </div>
-      <div class="field">
-        <label for="eventDate">Event date</label>
-        <input type="date" id="eventDate" name="eventDate">
-      </div>
-      <div class="field field-full">
-        <label for="message">Message <span aria-hidden="true">*</span></label>
-        <textarea id="message" name="message" rows="6" required maxlength="4000"
-                  placeholder="Audience, format, location, and anything else we should know."></textarea>
-      </div>
-
-      <!-- Honeypot -->
-      <div class="honeypot" aria-hidden="true">
-        <label for="website">Website</label>
-        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
-      </div>
-
-      <div class="field-full form-actions">
-        <button type="submit" class="btn btn-gold btn-lg">Send Booking Inquiry</button>
-        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
-      </div>
-    </form>
-  </div>
-</section>
-
 </main>
 
-<!-- Floating reel launcher. Pinned bottom-right for the whole page, hero
-     included. Dismissable; JS only handles the close button. -->
-<aside class="reel-float" id="reel-float">
-  <a class="reel-float-link" href="#speaker-reel">
+<!-- Floating reel launcher — pinned bottom-right, plays the video inside itself.
+     TODO: dormant until there is a reel. It now carries the video id directly (the
+     reel section that used to hold it was removed), so putting the YouTube id in
+     data-video-id below is all it takes to bring it back. Empty id = main.js drops
+     it from the page, and no JS means it never renders at all. -->
+<aside class="reel-float" id="reel-float" data-video-id="" hidden>
+  <a class="reel-float-link" href="https://www.youtube.com/@visionbuildaz" target="_blank" rel="noopener">
     <span class="reel-float-thumb">
-      <img src="assets/wd-hero.webp" width="936" height="1200" loading="lazy" alt="">
+      <img src="assets/wd-speaking.webp" width="2200" height="1228" loading="lazy" alt="">
       <span class="reel-float-play"><svg aria-hidden="true"><use href="#ico-play"></use></svg></span>
     </span>
     <span class="reel-float-text">
@@ -871,7 +771,7 @@
   <button class="reel-float-close" type="button" id="reel-float-close" aria-label="Hide the speaker reel shortcut">&times;</button>
 </aside>
 
-<!-- ============ 10. FOOTER ============ -->
+<!-- ============ 9. FOOTER ============ -->
 <footer class="footer">
   <div class="wrap footer-grid">
     <div class="footer-brand-col">
@@ -897,8 +797,8 @@
       <div>
         <h2 class="footer-heading">Explore</h2>
         <ul>
+          <li><a href="#why-wd">Why WD</a></li>
           <li><a href="#speaking">Speaking</a></li>
-          <li><a href="#speaker-reel">Speaker Reel</a></li>
           <li><a href="#testimonials">Testimonials</a></li>
           <li><a href="#meet-wd">Meet WD</a></li>
           <li><a href="#books">Books</a></li>
@@ -908,8 +808,7 @@
         <h2 class="footer-heading">For Organizers</h2>
         <ul>
           <li><a href="assets/WD_Brown_Speaker_Sheet.pdf" download>Speaker sheet (PDF)</a></li>
-          <li><a href="#speaking">Topics &amp; formats</a></li>
-          <li><a href="#books">Bulk book packages</a></li>
+          <li><a href="#speaking">Signature topics</a></li>
           <li><a href="#contact">Request pricing</a></li>
           <li><a href="#contact">Book WD to speak</a></li>
         </ul>

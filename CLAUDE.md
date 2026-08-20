@@ -66,41 +66,70 @@ invisible until animations ran. This build inverts that, and the pattern is easy
   scrolled into view.
 - `prefers-reduced-motion` disables all of it and shows the final state. Every auto-rotating
   carousel checks it in its own `start()` — dots and arrows still work, nothing self-advances.
+  Headless screenshots are much easier to read with `--force-prefers-reduced-motion`: it skips
+  the reveal stagger entirely, so a short `--virtual-time-budget` still catches the final
+  state. Keep the budget under 15s or the signup modal opens and greys out the whole page.
 
-### Four carousels, three different implementations
+### Two carousels, two different implementations
 
-Don't assume one shared engine. They are deliberately separate and only the hero pair
-shares code:
+Don't assume one shared engine. They are deliberately separate:
 
-1. **Hero (`[data-carousel]`)** — the generic one. Every `[data-track]` on the page is
-   collected and its `[data-slide]` children toggled `is-active` at the same index, so the
-   photo track and the lede-copy track advance together off one counter. Adding a slide =
-   one element in each track; dots and count derive themselves. Slides in a track share
-   **one CSS grid cell** (`grid-area: 1 / 1`), so the container is as tall as the tallest
-   slide and nothing reflows mid-crossfade.
-2. **Testimonials (`[data-testimonials]`)** — coverflow. JS only assigns
-   `is-center` / `is-prev` / `is-next`; CSS owns every transform. Off-stage cards get
-   `tabIndex = -1` so they are not tab stops. Once a video is opened the carousel `locked`s
-   permanently — never rotate a playing video out from under someone.
-3. **Books (`[data-books-carousel]`)** — the odd one out: pixel `translateX` on a track,
+1. **Hero lede (`[data-carousel]`)** — the generic one. Every `[data-track]` on the page is
+   collected and its `[data-slide]` children toggled `is-active` at the same index, so any
+   number of tracks advance off one counter; dots and count derive themselves. Slides in a
+   track share **one CSS grid cell** (`grid-area: 1 / 1`), so the container is as tall as
+   the tallest slide and nothing reflows mid-crossfade. Only the rotating lede uses it now —
+   the photo track went away with the cutout carousel.
+2. **Books (`[data-books-carousel]`)** — the odd one out: pixel `translateX` on a track,
    with a clone-based "infinite" wrap that snaps back with `transition: none` after 600ms.
    `TOTAL_ORIGINAL = 4` and the `24`px gap are **hardcoded** and must match the markup and
    CSS. Adding a book means updating both constants and the clone set.
 
+### The testimonial wall
+
+`[data-testimonials]` was a coverflow carousel until the 19 Aug batch-2 rebuild; it is now
+a plain CSS grid (`.t-wall`) with every clip on screen at once, and the only JS left is the
+facade → player swap. It was briefly restored to a coverflow on 20 Aug and reverted the same
+day — **the client has now explicitly chosen the grid twice. Do not turn it back into a
+carousel.** The movement they wanted was the scroll fade-in, which is the `.reveal-group` on
+the wall, not a rotation.
+
+**Only one player may exist at a time**: opening a second testimonial swaps the running
+iframe back for its own facade node, which is what actually stops the audio. That mattered
+on the carousel and matters more on a grid — remove it and every tile someone clicks keeps
+talking. Thumbnails are `maxresdefault.jpg`, not `hqdefault.jpg`, which is a 4:3 crop with
+black bars baked in; maxres only exists for HD uploads, so check a new id returns 200 before
+wiring it.
+
 ### YouTube facades
 
-Testimonial and reel videos are `<button class="t-facade">`, not iframes. Nothing is
-requested from YouTube until a click, so the page sets no third-party cookies on load; the
-real embed uses `youtube-nocookie.com`. Facades carrying `data-video-placeholder` instead of
-`data-video-id` pop an `alert()` — those are awaiting client footage, not broken.
+Testimonial videos are `<button class="t-facade">`, not iframes. Nothing is requested from
+YouTube until a click, so the page sets no third-party cookies on load; the real embed uses
+`youtube-nocookie.com`. Facades carrying `data-video-placeholder` instead of `data-video-id`
+pop an `alert()` — those are awaiting client footage, not broken.
 
-### Reveals: the load handler wins
+The speaker reel has no section any more (the client cut it), but two things still wait on
+it and both hang off **one** attribute: `#reel-float[data-video-id]`. While it is empty the
+floating launcher removes itself from the page and the hero's `#hero-reel-btn` stays
+`hidden`; put a YouTube id there and both appear, with the hero button calling the same
+`playReel()` so the video always plays inside the bubble. That is the entire switch — don't
+add a second id anywhere.
 
-`.reveal` / `.reveal-group` elements are revealed by an IntersectionObserver, but
-`main.js` also force-adds `is-visible` to **all** of them on `window.load`. On a fast
-connection that fires almost immediately, so in practice the scroll-in effect only plays
-for content below a very long fold. This was a deliberate "never leave content hidden"
-safety net — if you are debugging "why doesn't my reveal animate", that's why.
+Note `[hidden] { display: none !important; }` in the utilities block: `.btn` sets
+`display: inline-flex`, and an author class beats the UA's `[hidden]` rule, so without it
+the held button would render anyway. Any `.btn` you hide by attribute depends on it.
+
+### Reveals: the safety net is "no observer", not "page loaded"
+
+`.reveal` / `.reveal-group` elements are revealed by an IntersectionObserver. `main.js`
+used to *also* force `is-visible` onto all of them on `window.load`, which on any normal
+connection fired before the user scrolled anywhere and killed the fade-in sitewide. The
+client asked for that effect back on 20 Aug, so the net now only fires when
+`IntersectionObserver` is absent — the "never leave content hidden" guarantee still holds
+(no JS at all → no `.js` class → nothing is hidden in the first place).
+
+Consequence for screenshots: below-fold content is now genuinely invisible in a full-page
+capture. Use `--force-prefers-reduced-motion`, which shows the final state.
 
 ### The hero is a photograph, not a cutout carousel
 
@@ -169,6 +198,13 @@ counts per tag name — mixing them into the `<span>` sequence shifts every word
   its children become grid items that `order` can interleave with the photo.
 
 ### API routes
+
+> **`api/book.js` is dormant.** The booking form it served was replaced with a single
+> outbound button in the 19 Aug batch — booking runs through the client's CRM so the
+> destination can change without a site edit. The route, its test and the honeypot CSS
+> are kept because the CRM URL had not arrived yet and reverting is a git revert; nothing
+> on the page posts to it. `#contact`'s button carries a `data-todo` and a mailto
+> fallback until the real URL lands (ASSET-REQUEST #32).
 
 `api/book.js` (booking form) and `api/subscribe.js` (signup modal) are Vercel Node
 functions. Both: validate server-side regardless of client checks, use a honeypot field
